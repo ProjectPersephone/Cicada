@@ -100,14 +100,14 @@ void analogWrite(uint8_t pin, int val)
                 }
                 switch(digitalPinToTimer(pin)) {                // which timer and CCR?
  			//case: T0A0                            // CCR0 used as period register
-			case T0A1:                              // Timer0 / CCR1
+			case T0A1:                              // TimerA0 / CCR1
                                 TA0CCR0 = PWM_PERIOD;           // PWM Period
                                 TA0CCTL1 = OUTMOD_7;            // reset/set
                                 TA0CCR1 = PWM_DUTY(val);       // PWM duty cycle
                                 TA0CTL = TASSEL_2 + MC_1 + analog_div;       // SMCLK, up mode
                                 break;
 #if defined(__MSP430_HAS_TA3__) 
- 			case T0A2:                              // Timer0 / CCR1
+ 			case T0A2:                              // TimerA0 / CCR2
                                 TA0CCR0 = PWM_PERIOD;           // PWM Period
                                 TA0CCTL2 = OUTMOD_7;            // reset/set
                                 TA0CCR2 = PWM_DUTY(val);       // PWM duty cycle
@@ -116,13 +116,13 @@ void analogWrite(uint8_t pin, int val)
 #endif
 #if defined(__MSP430_HAS_T1A3__) 
  			//case: T1A0                            // CCR0 used as period register
-			case T1A1:                              // Timer0 / CCR1
+			case T1A1:                              // TimerA1 / CCR1
                                 TA1CCR0 = PWM_PERIOD;           // PWM Period
                                 TA1CCTL1 = OUTMOD_7;            // reset/set
                                 TA1CCR1 = PWM_DUTY(val);       // PWM duty cycle
                                 TA1CTL = TASSEL_2 + MC_1+ analog_div;       // SMCLK, up mode
                                 break;
- 			case T1A2:                              // Timer0 / CCR1
+ 			case T1A2:                              // TimerA1 / CCR2
                                 TA1CCR0 = PWM_PERIOD;           // PWM Period
                                 TA1CCTL2 = OUTMOD_7;            // reset/set
                                 TA1CCR2 = PWM_DUTY(val);       // PWM duty cycle
@@ -131,17 +131,32 @@ void analogWrite(uint8_t pin, int val)
 #endif
 #if defined(__MSP430_HAS_T2A3__)  
  			//case: T2A0                            // CCR0 used as period register
-			case T2A1:                              // Timer0 / CCR1
+			case T2A1:                              // TimerA2 / CCR1
                                 TA2CCR0 = PWM_PERIOD;           // PWM Period
                                 TA2CCTL1 = OUTMOD_7;            // reset/set
                                 TA2CCR1 = PWM_DUTY(val);       // PWM duty cycle
                                 TA2CTL = TASSEL_2 + MC_1+ analog_div;       // SMCLK, up mode
                                 break;
- 			case T2A2:                              // Timer0 / CCR1
+ 			case T2A2:                              // TimerA2 / CCR2
                                 TA2CCR0 = PWM_PERIOD;           // PWM Period
                                 TA2CCTL2 = OUTMOD_7;            // reset/set
                                 TA2CCR2 = PWM_DUTY(val);       // PWM duty cycle
                                 TA2CTL = TASSEL_2 + MC_1+ analog_div;       // SMCLK, up mode
+                                break;
+#endif
+#if defined(__MSP430_HAS_T0B3__) 
+ 			//case: T0B0                            // CCR0 used as period register
+ 			case T0B1:                              // TimerB0 / CCR1
+                                TB1CCR0 = PWM_PERIOD;           // PWM Period
+                                TB1CCTL2 = OUTMOD_7;            // reset/set
+                                TB1CCR2 = PWM_DUTY(val);       // PWM duty cycle
+                                TB1CTL = TBSSEL_2 + MC_1+ analog_div;       // SMCLK, up mode
+                                break;
+ 			case T0B2:                              // TimerB0 / CCR1
+                                TB2CCR0 = PWM_PERIOD;           // PWM Period
+                                TB2CCTL2 = OUTMOD_7;            // reset/set
+                                TB2CCR2 = PWM_DUTY(val);       // PWM duty cycle
+                                TB2CTL = TBSSEL_2 + MC_1+ analog_div;       // SMCLK, up mode
                                 break;
 #endif
                         case NOT_ON_TIMER:                      // not on a timer output pin
