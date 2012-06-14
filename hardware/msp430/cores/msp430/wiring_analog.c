@@ -32,7 +32,16 @@
 #include "wiring_private.h"
 #include "pins_energia.h"
 
+#if defined(__MSP430_HAS_ADC10__) && !defined(ADC10ENC)
+#define ADC10ENC ENC 
+#endif
+#if defined(__MSP430_HAS_ADC10__) && !defined(ADC10MEM0)
+#define ADC10MEM0 ADC10MEM 
+#endif
+
+#if defined(__MSP430_HAS_ADC10__) || defined(__MSP430_HAS_ADC10_B__)
 uint16_t analog_reference = DEFAULT, analog_period = F_CPU/490, analog_div = 0, analog_res=255; // devide clock with 0, 2, 4, 8
+#endif
 
 void analogReference(uint16_t mode)
 {
@@ -173,7 +182,7 @@ void analogWrite(uint8_t pin, int val)
 uint16_t analogRead(uint8_t pin)
 {
 // make sure we have an ADC
-#if defined(__MSP430_HAS_ADC10__)
+#if defined(__MSP430_HAS_ADC10__) || defined(__MSP430_HAS_ADC10_B__)
     //  0000 A0
     //  0001 A1
     //  0010 A2
@@ -194,18 +203,18 @@ uint16_t analogRead(uint8_t pin)
         return 0;
     }
 
-    ADC10CTL0 &= ~ENC;                      // disable ADC
+    ADC10CTL0 &= ~ADC10ENC;                 // disable ADC
     ADC10CTL0 = analog_reference |          // set analog reference
             ADC10ON | ADC10SHT_3 | ADC10IE; // turn ADC ON; sample + hold @ 64 × ADC10CLKs; Enable interrupts
     ADC10CTL1 = ADC10SSEL_0 | ADC10DIV_5 |  // ADC10OSC as ADC10CLK (~5MHz) / 5
             (pin << 12);                    // select channel
     __delay_cycles(128);                    // Delay to allow Ref to settle
-    ADC10CTL0 |= ENC | ADC10SC;             // enable ADC and start conversion
+    ADC10CTL0 |= ADC10ENC | ADC10SC;        // enable ADC and start conversion
     while (ADC10CTL1 & ADC10BUSY) {         // sleep and wait for completion
         __bis_SR_register(CPUOFF + GIE);    // LPM0 with interrupts enabled
     }
 
-    return ADC10MEM;             // return sampled value after returning to active mode in ADC10_ISR
+    return ADC10MEM0;                       // return sampled value after returning to active mode in ADC10_ISR
 #else
     // no ADC
     return 0;

@@ -122,9 +122,19 @@ static const uint8_t P2_4 = 35;
 static const uint8_t PJ_4 = 37;
 static const uint8_t PJ_5 = 38;
 
-static const uint8_t RED_LED = 1;
-static const uint8_t GREEN_LED = 2;
-static const uint8_t PUSH2 = 4;
+static const uint8_t RED_LED = 11;
+static const uint8_t GREEN_LED = 12;
+static const uint8_t LED1 = 11;
+static const uint8_t LED2 = 12;
+static const uint8_t LED3 = 13;
+static const uint8_t LED4 = 14;
+static const uint8_t LED5 = 24;
+static const uint8_t LED6 = 25;
+static const uint8_t LED7 = 26;
+static const uint8_t LED8 = 27;
+
+static const uint8_t PUSH1 = 15;
+static const uint8_t PUSH2 = 16;
 static const uint8_t TEMPSENSOR = 10; // depends on chip
 
 
@@ -140,17 +150,23 @@ const uint16_t port_to_dir[] = {
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4DIR,
 #endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJDIR,
+#endif
 };
 
 const uint16_t port_to_sel[] = {
 	NOT_A_PORT,
-	(uint16_t) &P1SEL,
-	(uint16_t) &P2SEL,
+	(uint16_t) &P1SEL0,
+	(uint16_t) &P2SEL0,
 #ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3SEL,
+	(uint16_t) &P3SEL0,
 #endif
 #ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4SEL,
+	(uint16_t) &P4SEL0,
+#endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJSEL0,
 #endif
 };
 
@@ -164,29 +180,35 @@ const uint16_t port_to_ren[] = {
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4REN,
 #endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJREN,
+#endif
 };
 
 const uint16_t port_to_sel2[] = {
 	NOT_A_PORT,
 #ifdef P1SEL2_
-	(uint16_t) &P1SEL2,
+	(uint16_t) &P1SEL1,
 #else
         NOT_A_PORT,
 #endif
 #ifdef P2SEL2_
-	(uint16_t) &P2SEL2,
+	(uint16_t) &P2SEL1,
 #else 
         NOT_A_PORT,
 #endif
 #ifdef P3SEL2_
-	(uint16_t) &P3SEL2,
+	(uint16_t) &P3SEL1,
 #else
         NOT_A_PORT,
 #endif
 #ifdef P4SEL2_
-	(uint16_t) &P4SEL2,
+	(uint16_t) &P4SEL1,
 #else
         NOT_A_PORT,
+#endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJSEL1,
 #endif
 };
 
@@ -200,6 +222,9 @@ const uint16_t port_to_input[] = {
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4IN,
 #endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJIN,
+#endif
 };
 const uint16_t port_to_output[] = {
 	NOT_A_PORT,
@@ -210,6 +235,9 @@ const uint16_t port_to_output[] = {
 #endif
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4OUT,
+#endif
+#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+	(uint16_t) &PJOUT,
 #endif
 };
 

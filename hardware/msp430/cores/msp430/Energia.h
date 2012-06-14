@@ -46,29 +46,59 @@ extern "C"{
 #define EXTERNAL SREF_2
 #endif
 
-#define P1 1
-#define P2 2
-#define P3 3
-#define P4 4
-#define P5 5
-#define P6 6
-#define P7 7
+#if defined(__MSP430_HAS_ADC10_B__)
+#define DEFAULT ADC10SREF_0
+#define INTERNAL1V5 ADC10SREF_1 + ADC10REFON
+#define INTERNAL2V5 ADC10SREF_1 + ADC10REFON + ADC10REF2_5V
+#define EXTERNAL ADC10SREF_2
+#endif
 
-#define T0A0 0
-#define T0A1 1
-#define T0A2 2
-#define T1A0 3
-#define T1A1 4
-#define T1A2 5
-#define T1A3 6
-#define T1A4 7
-#define T1A5 8
-#define T2A0 9
-#define T2A1 10
-#define T2A2 11
-#define T0B0 12
-#define T0B1 13
-#define T0B2 14
+enum{
+  P1 = 1,
+  P2,
+#ifdef __MSP430_HAS_PORT3_R__
+  P3,
+#endif  
+#ifdef __MSP430_HAS_PORT4_R__
+  P4,
+#endif  
+#ifdef __MSP430_HAS_PORT5_R__
+  P5,
+#endif  
+#ifdef __MSP430_HAS_PORT6_R__
+  P6,
+#endif  
+#ifdef __MSP430_HAS_PORT7_R__
+  P7,
+#endif  
+#ifdef __MSP430_HAS_PORTJ_R__
+  PJ,
+#endif  
+  };
+
+enum{
+  T0A0,
+  T0A1,
+  T0A2,
+  T1A0,
+  T1A1,
+  T1A2,
+  T1A3,
+  T1A4,
+  T1A5,
+  T2A0,
+  T2A1,
+  T2A2,
+  T0B0,
+  T0B1,
+  T0B2,
+  T1B0,
+  T1B1,
+  T1B2,
+  T2B0,
+  T2B1,
+  T2B2
+  };
 
 typedef uint8_t boolean;
 typedef uint8_t byte;

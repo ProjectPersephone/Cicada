@@ -104,7 +104,6 @@ static const uint8_t P4_4 = 19;
 static const uint8_t P4_5 = 20;
 static const uint8_t P4_6 = 21;
 static const uint8_t P4_7 = 22;
-static const uint8_t P3_3 = 22;
 static const uint8_t P3_4 = 23;
 static const uint8_t P3_5 = 24;
 static const uint8_t P3_6 = 25;
@@ -121,9 +120,9 @@ static const uint8_t P1_6 = 35;
 static const uint8_t P1_7 = 36;
 static const uint8_t P2_5 = 40;
 
-static const uint8_t RED_LED = 2;
-static const uint8_t GREEN_LED = 3;
-static const uint8_t PUSH2 = 4;
+static const uint8_t RED_LED = 29;
+static const uint8_t GREEN_LED = 30;
+static const uint8_t PUSH2 = 31;
 static const uint8_t TEMPSENSOR = 10; // depends on chip
 
 
