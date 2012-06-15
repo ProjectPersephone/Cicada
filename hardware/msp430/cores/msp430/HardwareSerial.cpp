@@ -241,6 +241,7 @@ void HardwareSerial::ProcessTXInt(void)
 		// Buffer empty, so disable interrupts
 #if defined(__MSP430_HAS_EUSCI_A0__)
 		UCA0IE &= ~UCTXIE;
+		UCA0IFG |= UCTXIFG;    // Set Flag again
 #else
 		UC0IE &= ~UCA0TXIE;
 #endif	
