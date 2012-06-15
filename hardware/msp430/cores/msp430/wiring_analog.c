@@ -94,8 +94,8 @@ void analogWrite(uint8_t pin, int val)
 
 	        uint8_t bit = digitalPinToBitMask(pin); // get pin bit
 	        uint8_t port = digitalPinToPort(pin);   // get pin port
-	        volatile uint16_t *sel;
-	        volatile uint16_t *sel2;
+	        volatile uint8_t *sel;
+	        volatile uint8_t *sel2;
                 
                 if (port == NOT_A_PORT) return; // pin on timer?
                
@@ -204,10 +204,19 @@ uint16_t analogRead(uint8_t pin)
     }
 
     ADC10CTL0 &= ~ADC10ENC;                 // disable ADC
-    ADC10CTL0 = analog_reference |          // set analog reference
-            ADC10ON | ADC10SHT_3 | ADC10IE; // turn ADC ON; sample + hold @ 64 × ADC10CLKs; Enable interrupts
     ADC10CTL1 = ADC10SSEL_0 | ADC10DIV_5 |  // ADC10OSC as ADC10CLK (~5MHz) / 5
             (pin << 12);                    // select channel
+#if defined(__MSP430_HAS_ADC10__)
+    ADC10CTL0 = analog_reference |          // set analog reference
+            ADC10ON | ADC10SHT_3 | ADC10IE; // turn ADC ON; sample + hold @ 64 × ADC10CLKs; Enable interrupts
+#endif
+#if defined(__MSP430_HAS_ADC10_B__)
+    ADC10CTL0 = analog_reference |          // set analog reference
+            ADC10ON | ADC10SHT_3;           // turn ADC ON; sample + hold @ 64 × ADC10CLKs
+    ADC10CTL1 |= ADC10SHP;                  // ADCCLK = MODOSC; sampling timer
+	ADC10IFG = 0;                           // Clear Flags
+	ADC10IE |= ADC10IE0;                    // Enable interrupts
+#endif
     __delay_cycles(128);                    // Delay to allow Ref to settle
     ADC10CTL0 |= ADC10ENC | ADC10SC;        // enable ADC and start conversion
     while (ADC10CTL1 & ADC10BUSY) {         // sleep and wait for completion
@@ -224,5 +233,8 @@ uint16_t analogRead(uint8_t pin)
 __attribute__((interrupt(ADC10_VECTOR)))
 void ADC10_ISR(void)
 {
+#if defined(__MSP430_HAS_ADC10_B__)
+	ADC10IFG = 0;                           // Clear Flags
+#endif
 	__bic_SR_register_on_exit(CPUOFF);        // return to active mode
 }

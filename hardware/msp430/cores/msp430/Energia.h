@@ -157,21 +157,29 @@ void detachInterrupt(uint8_t);
 extern const uint8_t digital_pin_to_timer[];
 extern const uint8_t digital_pin_to_port[];
 extern const uint8_t digital_pin_to_bit_mask[];
-extern const uint16_t port_to_sel[];
+extern const uint16_t port_to_sel0[];
+extern const uint16_t port_to_sel1[];
 extern const uint16_t port_to_sel2[];
 extern const uint16_t port_to_input[];
 extern const uint16_t port_to_output[];
 
-#define digitalPinToPort(P) ( digital_pin_to_port[P] )
+#define digitalPinToPort(P)    ( digital_pin_to_port[P] )
 #define digitalPinToBitMask(P) ( digital_pin_to_bit_mask[P] )
-#define digitalPinToTimer(P) ( digital_pin_to_timer[P] )
-#define portDirRegister(P) ( (volatile uint16_t *)( port_to_dir[P]) )
-#define portSelRegister(P) ( (volatile uint16_t *)( port_to_sel[P]) )
-#define portSel2Register(P) ( (volatile uint16_t *)( port_to_sel2[P]) )
-#define portRenRegister(P) ( (volatile uint16_t *)( port_to_ren[P]) )
-#define portOutputRegister(P) ( (volatile uint16_t *)( port_to_output[P]) )
-#define portInputRegister(P) ( (volatile uint16_t *)( port_to_input[P]) )
-#define digitalPinToTimer(P) ( digital_pin_to_timer[P] )
+#define digitalPinToTimer(P)   ( digital_pin_to_timer[P] )
+#define portDirRegister(P)     ( (volatile uint8_t *)( port_to_dir[P]) )
+/* 
+ * We either of the compination   PxSEL and PxSEL2   or   PxSEL0 and PxSEL1
+ * So we can remap  PxSEL and PxSEL2   to   PxSEL0 and PxSEL1
+*/ 
+#define portSelRegister(P)     ( (volatile uint8_t *)( port_to_sel0[P]) )
+#define portSel2Register(P)    ( (volatile uint8_t *)( port_to_sel1[P]) )
+
+#define portSel0Register(P)    ( (volatile uint8_t *)( port_to_sel0[P]) )
+#define portSel1Register(P)    ( (volatile uint8_t *)( port_to_sel1[P]) )
+#define portRenRegister(P)     ( (volatile uint8_t *)( port_to_ren[P]) )
+#define portOutputRegister(P)  ( (volatile uint8_t *)( port_to_output[P]) )
+#define portInputRegister(P)   ( (volatile uint8_t *)( port_to_input[P]) )
+#define digitalPinToTimer(P)   ( digital_pin_to_timer[P] )
 
 // Implemented in wiring.c
 void delayMicroseconds(unsigned int us);

@@ -36,23 +36,27 @@
 #define BV(x) (1 << (x))
 #endif
 
-#if defined(__MSP430_HAS_USCI__)
-static const uint8_t SS     = 9; /* P3.0 */
-static const uint8_t SCK    = 12; /* P3.3 */
-static const uint8_t MOSI   = 10; /* P3.1 */
-static const uint8_t MISO   = 11; /* P3.2 */
-static const uint8_t TWISDA = 10; /* P3.1 */
-static const uint8_t TWISCL = 11; /* P3.2 */
+#if defined(__MSP430_HAS_EUSCI_A0__)
+static const uint8_t SS      = 9;   /* P3.0 */
+static const uint8_t SCK     = 12;  /* P3.3 */
+static const uint8_t MOSI    = 10;  /* P3.1 */
+static const uint8_t MISO    = 11;  /* P3.2 */
+static const uint8_t TWISDA  = 10;  /* P3.1 */
+static const uint8_t TWISCL  = 11;  /* P3.2 */
+static const uint8_t UARTRXD = 22;  /* Receive  Data (RXD) at P2.1 */
+static const uint8_t UARTTXD = 21;  /* Transmit Data (TXD) at P2.0 */
+//#define UART_SET_PxSEL0
+#define UART_SET_PxSEL1
 #endif
 
-static const uint8_t A0 = 0;
-static const uint8_t A1 = 1;
-static const uint8_t A2 = 2;
-static const uint8_t A3 = 3;
-static const uint8_t A4 = 4;
-static const uint8_t A5 = 5;
-static const uint8_t A6 = 6;
-static const uint8_t A7 = 7;
+static const uint8_t A0  = 0;
+static const uint8_t A1  = 1;
+static const uint8_t A2  = 2;
+static const uint8_t A3  = 3;
+static const uint8_t A4  = 4;
+static const uint8_t A5  = 5;
+static const uint8_t A6  = 6;
+static const uint8_t A7  = 7;
 static const uint8_t A10 = 10; // special. This is the internal temp sensor
 static const uint8_t A11 = 11; // 
 static const uint8_t A12 = 12; // 
@@ -140,6 +144,36 @@ static const uint8_t TEMPSENSOR = 10; // depends on chip
 
 #ifdef ARDUINO_MAIN
 
+const uint16_t port_to_input[] = {
+	NOT_A_PORT,
+	(uint16_t) &P1IN,
+	(uint16_t) &P2IN,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3IN,
+#endif
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4IN,
+#endif
+#ifdef __MSP430_HAS_PORTJ_R__
+	(uint16_t) &PJIN,
+#endif
+};
+
+const uint16_t port_to_output[] = {
+	NOT_A_PORT,
+	(uint16_t) &P1OUT,
+	(uint16_t) &P2OUT,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3OUT,
+#endif
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4OUT,
+#endif
+#ifdef __MSP430_HAS_PORTJ_R__
+	(uint16_t) &PJOUT,
+#endif
+};
+
 const uint16_t port_to_dir[] = {
 	NOT_A_PORT,
 	(uint16_t) &P1DIR,
@@ -150,23 +184,8 @@ const uint16_t port_to_dir[] = {
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4DIR,
 #endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+#ifdef __MSP430_HAS_PORTJ_R__
 	(uint16_t) &PJDIR,
-#endif
-};
-
-const uint16_t port_to_sel[] = {
-	NOT_A_PORT,
-	(uint16_t) &P1SEL0,
-	(uint16_t) &P2SEL0,
-#ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3SEL0,
-#endif
-#ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4SEL0,
-#endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
-	(uint16_t) &PJSEL0,
 #endif
 };
 
@@ -180,64 +199,38 @@ const uint16_t port_to_ren[] = {
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4REN,
 #endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
+#ifdef __MSP430_HAS_PORTJ_R__
 	(uint16_t) &PJREN,
 #endif
 };
 
-const uint16_t port_to_sel2[] = {
+const uint16_t port_to_sel0[] = {
 	NOT_A_PORT,
-#ifdef P1SEL2_
-	(uint16_t) &P1SEL1,
-#else
-        NOT_A_PORT,
+	(uint16_t) &P1SEL0,
+	(uint16_t) &P2SEL0,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3SEL0,
 #endif
-#ifdef P2SEL2_
-	(uint16_t) &P2SEL1,
-#else 
-        NOT_A_PORT,
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4SEL0,
 #endif
-#ifdef P3SEL2_
-	(uint16_t) &P3SEL1,
-#else
-        NOT_A_PORT,
-#endif
-#ifdef P4SEL2_
-	(uint16_t) &P4SEL1,
-#else
-        NOT_A_PORT,
-#endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
-	(uint16_t) &PJSEL1,
+#ifdef __MSP430_HAS_PORTJ_R__
+	(uint16_t) &PJSEL0,
 #endif
 };
 
-const uint16_t port_to_input[] = {
+const uint16_t port_to_sel1[] = {
 	NOT_A_PORT,
-	(uint16_t) &P1IN,
-	(uint16_t) &P2IN,
+	(uint16_t) &P1SEL1,
+	(uint16_t) &P2SEL1,
 #ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3IN,
+	(uint16_t) &P3SEL1,
 #endif
 #ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4IN,
+	(uint16_t) &P4SEL1,
 #endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
-	(uint16_t) &PJIN,
-#endif
-};
-const uint16_t port_to_output[] = {
-	NOT_A_PORT,
-	(uint16_t) &P1OUT,
-	(uint16_t) &P2OUT,
-#ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3OUT,
-#endif
-#ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4OUT,
-#endif
-#ifdef __MSP430_HAS_PORTJ_R__        /* Definition to show that Module is available */
-	(uint16_t) &PJOUT,
+#ifdef __MSP430_HAS_PORTJ_R__
+	(uint16_t) &PJSEL1,
 #endif
 };
 
@@ -266,7 +259,7 @@ const uint8_t digital_pin_to_timer[] = {
 	T0B0,         /* 17 - P2.5 */  
 	T1B0,         /* 18 - P2.6 */
 	NOT_ON_TIMER, /* 19 - TEST */
-		NOT_ON_TIMER, /* 20 - /RST */
+	NOT_ON_TIMER, /* 20 - /RST */
 	T2B0,         /* 21 - P2.0 */
 	T2B1,         /* 22 - P2.1 */
 	T2B2,         /* 23 - P2.2 */

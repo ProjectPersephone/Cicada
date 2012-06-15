@@ -37,22 +37,25 @@
 #endif
 
 #if defined(__MSP430_HAS_USCI__)
-static const uint8_t SS     = 9;  /* P3.0 */
-static const uint8_t SCK    = 12; /* P3.3 */
-static const uint8_t MOSI   = 10; /* P3.1 */
-static const uint8_t MISO   = 11; /* P3.2 */
-static const uint8_t TWISDA = 10; /* P3.1 */
-static const uint8_t TWISCL = 11; /* P3.2 */
+static const uint8_t SS      = 9;   /* P3.0 */
+static const uint8_t SCK     = 12;  /* P3.3 */
+static const uint8_t MOSI    = 10;  /* P3.1 */
+static const uint8_t MISO    = 11;  /* P3.2 */
+static const uint8_t TWISDA  = 10;  /* P3.1 */
+static const uint8_t TWISCL  = 11;  /* P3.2 */
+static const uint8_t UARTRXD = 24;  /* Receive  Data (RXD) at P3.5 */
+static const uint8_t UARTTXD = 23;  /* Transmit Data (TXD) at P3.4 */
+#define UART_SET_PxSEL
 #endif
 
-static const uint8_t A0 = 0;
-static const uint8_t A1 = 1;
-static const uint8_t A2 = 2;
-static const uint8_t A3 = 3;
-static const uint8_t A4 = 4;
-static const uint8_t A5 = 5;
-static const uint8_t A6 = 6;
-static const uint8_t A7 = 7;
+static const uint8_t A0  = 0;
+static const uint8_t A1  = 1;
+static const uint8_t A2  = 2;
+static const uint8_t A3  = 3;
+static const uint8_t A4  = 4;
+static const uint8_t A5  = 5;
+static const uint8_t A6  = 6;
+static const uint8_t A7  = 7;
 static const uint8_t A10 = 10; // special. This is the internal temp sensor
 static const uint8_t A11 = 11; // 
 static const uint8_t A12 = 12; // 
@@ -128,6 +131,30 @@ static const uint8_t TEMPSENSOR = 10; // depends on chip
 
 #ifdef ARDUINO_MAIN
 
+const uint16_t port_to_input[] = {
+	NOT_A_PORT,
+	(uint16_t) &P1IN,
+	(uint16_t) &P2IN,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3IN,
+#endif
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4IN,
+#endif
+};
+
+const uint16_t port_to_output[] = {
+	NOT_A_PORT,
+	(uint16_t) &P1OUT,
+	(uint16_t) &P2OUT,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3OUT,
+#endif
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4OUT,
+#endif
+};
+
 const uint16_t port_to_dir[] = {
 	NOT_A_PORT,
 	(uint16_t) &P1DIR,
@@ -137,18 +164,6 @@ const uint16_t port_to_dir[] = {
 #endif
 #ifdef __MSP430_HAS_PORT4_R__
 	(uint16_t) &P4DIR,
-#endif
-};
-
-const uint16_t port_to_sel[] = {
-	NOT_A_PORT,
-	(uint16_t) &P1SEL,
-	(uint16_t) &P2SEL,
-#ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3SEL,
-#endif
-#ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4SEL,
 #endif
 };
 
@@ -164,52 +179,22 @@ const uint16_t port_to_ren[] = {
 #endif
 };
 
-const uint16_t port_to_sel2[] = {
+/* 
+ * We either of the compination   PxSEL and PxSEL2   or   PxSEL0 and PxSEL1
+ * So we can remap  PxSEL and PxSEL2   to   PxSEL0 and PxSEL1
+*/ 
+const uint16_t port_to_sel0[] = {
 	NOT_A_PORT,
-#ifdef P1SEL2_
-	(uint16_t) &P1SEL2,
-#else
-        NOT_A_PORT,
+	(uint16_t) &P1SEL,
+	(uint16_t) &P2SEL,
+#ifdef __MSP430_HAS_PORT3_R__
+	(uint16_t) &P3SEL,
 #endif
-#ifdef P2SEL2_
-	(uint16_t) &P2SEL2,
-#else 
-        NOT_A_PORT,
-#endif
-#ifdef P3SEL2_
-	(uint16_t) &P3SEL2,
-#else
-        NOT_A_PORT,
-#endif
-#ifdef P4SEL2_
-	(uint16_t) &P4SEL2,
-#else
-        NOT_A_PORT,
+#ifdef __MSP430_HAS_PORT4_R__
+	(uint16_t) &P4SEL,
 #endif
 };
 
-const uint16_t port_to_input[] = {
-	NOT_A_PORT,
-	(uint16_t) &P1IN,
-	(uint16_t) &P2IN,
-#ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3IN,
-#endif
-#ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4IN,
-#endif
-};
-const uint16_t port_to_output[] = {
-	NOT_A_PORT,
-	(uint16_t) &P1OUT,
-	(uint16_t) &P2OUT,
-#ifdef __MSP430_HAS_PORT3_R__
-	(uint16_t) &P3OUT,
-#endif
-#ifdef __MSP430_HAS_PORT4_R__
-	(uint16_t) &P4OUT,
-#endif
-};
 
 /* 
  * Defines for devices with 2x TA3 timers (e.g. MSP430g2553). On the 20pin devices, upto 3 analog outputs are available

@@ -38,9 +38,9 @@ void pinMode(uint8_t pin, uint8_t mode)
 	uint8_t bit = digitalPinToBitMask(pin);
 	uint8_t port = digitalPinToPort(pin);
 
-	volatile uint16_t *dir;
-	volatile uint16_t *ren;
-	volatile uint16_t *out;
+	volatile uint8_t *dir;
+	volatile uint8_t *ren;
+	volatile uint8_t *out;
 
 	if (port == NOT_A_PORT) return;
 
@@ -78,8 +78,8 @@ void digitalWrite(uint8_t pin, uint8_t val)
 {
 	uint8_t bit = digitalPinToBitMask(pin);
 	uint8_t port = digitalPinToPort(pin);
-	volatile uint16_t *out;
-	volatile uint16_t *sel;
+	volatile uint8_t *out;
+	volatile uint8_t *sel;
 
 	if (port == NOT_A_PORT) return;
 
@@ -87,8 +87,15 @@ void digitalWrite(uint8_t pin, uint8_t val)
 	 * Clear bit in PxSEL register to select GPIO function. Other functions like analogWrite(...) 
 	 * will set this bit so need to clear it.
 	 */
-	sel = portSelRegister(port);	/* get the port function select register address */
-	*sel &= ~bit;			/* clear bit in pin function select register */
+	#if defined(P1SEL0_) || defined(P1SEL_) || defined(PASEL0_)
+	sel = portSel0Register(port);	/* get the port function select register address */
+	*sel &= ~bit;			        /* clear bit in pin function select register */
+	#endif
+	#if defined(P1SEL1_) || defined(P1SEL2_) || defined(PASEL1_)
+	sel = portSel1Register(port);	/* get the port function select register address */
+	*sel &= ~bit;			        /* clear bit in pin function select register */
+	#endif
+
 
 	out = portOutputRegister(port);
 
