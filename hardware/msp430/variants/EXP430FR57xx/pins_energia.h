@@ -41,12 +41,14 @@ static const uint8_t SS      = 9;   /* P3.0 */
 static const uint8_t SCK     = 12;  /* P3.3 */
 static const uint8_t MOSI    = 10;  /* P3.1 */
 static const uint8_t MISO    = 11;  /* P3.2 */
-static const uint8_t TWISDA  = 10;  /* P3.1 */
-static const uint8_t TWISCL  = 11;  /* P3.2 */
+static const uint8_t TWISDA  = 28;  /* P1.6 */
+static const uint8_t TWISCL  = 29;  /* P1.7 */
 static const uint8_t UARTRXD = 22;  /* Receive  Data (RXD) at P2.1 */
 static const uint8_t UARTTXD = 21;  /* Transmit Data (TXD) at P2.0 */
-//#define UART_SET_PxSEL0
-#define UART_SET_PxSEL1
+#define TWISDA_SET_MODE  (PORT_SELECTION1 | INPUT_PULLUP)
+#define TWISCL_SET_MODE  (PORT_SELECTION1 | INPUT_PULLUP)
+#define UARTRXD_SET_MODE (PORT_SELECTION1 | INPUT)
+#define UARTTXD_SET_MODE (PORT_SELECTION1 | OUTPUT)
 #endif
 
 static const uint8_t A0  = 0;

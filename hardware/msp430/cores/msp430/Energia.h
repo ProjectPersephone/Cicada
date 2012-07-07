@@ -25,10 +25,18 @@ extern "C"{
 #define FALLING 1
 #define RISING 0
 
+//#define INPUT 0x0
+//#define OUTPUT 0x1
+//#define INPUT_PULLUP 0x2
+//#define INPUT_PULLDOWN 0x3
+
 #define INPUT 0x0
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
-#define INPUT_PULLDOWN 0x3
+#define INPUT_PULLDOWN 0x4
+#define PORT_SELECTION0 0x10
+#define PORT_SELECTION1 0x20
+
 
 #define true 0x1
 #define false 0x0
@@ -172,7 +180,7 @@ extern const uint16_t port_to_output[];
  * So we can remap  PxSEL and PxSEL2   to   PxSEL0 and PxSEL1
 */ 
 #define portSelRegister(P)     ( (volatile uint8_t *)( port_to_sel0[P]) )
-#define portSel2Register(P)    ( (volatile uint8_t *)( port_to_sel1[P]) )
+#define portSel2Register(P)    ( (volatile uint8_t *)( port_to_sel2[P]) )
 
 #define portSel0Register(P)    ( (volatile uint8_t *)( port_to_sel0[P]) )
 #define portSel1Register(P)    ( (volatile uint8_t *)( port_to_sel1[P]) )

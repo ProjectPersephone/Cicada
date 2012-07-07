@@ -85,9 +85,9 @@ void HardwareSerial::begin(unsigned long baud)
 {
 	unsigned int mod, divider;
 	unsigned char oversampling;
-	uint8_t bit;
-	uint8_t port;
-	volatile uint8_t *sel;
+//	uint8_t bit;
+//	uint8_t port;
+//	volatile uint8_t *sel;
 	
 
 	if (SMCLK/baud>=48) {                                                // requires SMCLK for oversampling
@@ -100,49 +100,20 @@ void HardwareSerial::begin(unsigned long baud)
 	divider=(SMCLK<<4)/baud;
 
 	SerialPtr = this;
-//	P1SEL  = RXD + TXD;
-//	#ifdef P1SEL2
-//	P1SEL2  = RXD + TXD;
-//	#endif
-	
-	bit = digitalPinToBitMask(UARTRXD); // get pin bit
-	port = digitalPinToPort(UARTRXD);   // get pin port
-	if (port == NOT_A_PORT) return; // pin on I2Cmer?
-	//TODO: Firgure out a better way to determine if SELx needs to be set
-	#if (defined(P1SEL0_) || defined(P1SEL_) || defined(PASEL0_)) && (defined(UART_SET_PxSEL) || defined(UART_SET_PxSEL0))
-	sel = portSel0Register(port);	/* get the port function select register address */
-	*sel |= bit;
-	#endif
-	#if (defined(P1SEL1_) || defined(P1SEL2_) || defined(PASEL1_)) && (defined(UART_SET_PxSEL1) || defined(UART_SET_PxSEL2))
-	sel = portSel1Register(port);	/* get the port function select register address */
-	*sel |= bit;
-	#endif
 
-	
-	bit = digitalPinToBitMask(UARTTXD); // get pin bit
-	port = digitalPinToPort(UARTTXD);   // get pin port
-	if (port == NOT_A_PORT) return; // pin on I2C?
-	//TODO: Firgure out a better way to determine if SELx needs to be set
-	#if (defined(P1SEL0_) || defined(P1SEL_) || defined(PASEL0_)) && (defined(UART_SET_PxSEL) || defined(UART_SET_PxSEL0))
-	sel = portSel0Register(port);	/* get the port function select register address */
-	*sel |= bit;
-	#endif
-	#if (defined(P1SEL1_) || defined(P1SEL2_) || defined(PASEL1_)) && (defined(UART_SET_PxSEL1) || defined(UART_SET_PxSEL2))
-	sel = portSel1Register(port);	/* get the port function select register address */
-	*sel |= bit;
-	#endif
-	
+	pinMode(UARTRXD, UARTRXD_SET_MODE);
+	pinMode(UARTTXD, UARTTXD_SET_MODE);	
 
 	UCA0CTL1 = UCSWRST;
-	UCA0CTL1 = UCSSEL_2;        //SMCLK
+	UCA0CTL1 = UCSSEL_2;                                // SMCLK
 	UCA0CTL0 = 0;
 	UCA0ABCTL = 0;
 #if defined(__MSP430_HAS_EUSCI_A0__)
 	if(!oversampling) {
-		mod = ((divider&0xF)+1)&0xE;                                                // UCBRSx (bit 1-3)
+		mod = ((divider&0xF)+1)&0xE;                    // UCBRSx (bit 1-3)
 		divider >>=4;
 	} else {
-		mod = divider&0xFFF0;                                                      // UCBRFx = INT([(N/16) – INT(N/16)] × 16)
+		mod = divider&0xFFF0;                           // UCBRFx = INT([(N/16) – INT(N/16)] × 16)
 		divider>>=8;
 	}
 	UCA0BR0 = divider;
@@ -150,10 +121,10 @@ void HardwareSerial::begin(unsigned long baud)
 	UCA0MCTLW = (oversampling ? UCOS16:0) | mod;
 #else
 	if(!oversampling) {
-		mod = ((divider&0xF)+1)&0xE;                                                // UCBRSx (bit 1-3)
+		mod = ((divider&0xF)+1)&0xE;                    // UCBRSx (bit 1-3)
 		divider >>=4;
 	} else {
-		mod = ((divider&0xf8)+0x8)&0xf0;                                            // UCBRFx (bit 4-7)
+		mod = ((divider&0xf8)+0x8)&0xf0;                // UCBRFx (bit 4-7)
 		divider>>=8;
 	}
 	UCA0BR0 = divider;
