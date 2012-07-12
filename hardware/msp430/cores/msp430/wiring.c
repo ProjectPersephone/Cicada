@@ -33,6 +33,7 @@
 void initClocks(void);
 void enableWatchDogIntervalMode(void);
 void disableWatchDog(void);
+static void __inline__ delayClockCycles(register unsigned int n);
 
 void init()
 {
@@ -108,6 +109,26 @@ void initClocks(void)
         #warning No Suitable Frequency found!
 #endif
 ////    CSCTL0 = 0;                    // Disable Access to CS Registers
+#endif
+
+#if defined(__MSP430_HAS_UCS_RF__)
+    UCSCTL3 |= SELREF_2;              // Set DCO FLL reference = REFO
+	UCSCTL4 |= SELA_2;                // Set ACLK = REFO
+
+	__bis_status_register(SCG0);      // Disable the FLL control loop
+	UCSCTL0 = 0x0000;                 // Set lowest possible DCOx, MODx
+	UCSCTL1 = DCORSEL_5;              // Select DCO range 16MHz operation
+	UCSCTL2 = FLLD_1 + 249;           // Set DCO Multiplier for 8MHz
+	                                  // (N + 1) * FLLRef = Fdco
+	                                  // (249 + 1) * 32768 = 8MHz
+	                                  // Set FLL Div = fDCOCLK/2
+	__bic_status_register(SCG0);      // Enable the FLL control loop
+
+	// Worst-case settling time for the DCO when the DCO range bits have been
+	// changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
+	// UG for optimization.
+	// 32 x 32 x 8 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle
+	delayClockCycles(250000);
 #endif
 
 }
@@ -203,6 +224,15 @@ void delay(uint32_t milliseconds)
         while(wdtCounter < wakeTime)
                 /* Wait for WDT interrupt in LMP0 */
                 __bis_status_register(LPM0_bits+GIE);
+}
+
+static void __inline__ delayClockCycles(register unsigned int n)
+{
+    __asm__ __volatile__ (
+                "1: \n"
+                " dec        %[n] \n"
+                " jne        1b \n"
+        : [n] "+r"(n));
 }
 
 __attribute__((interrupt(WDT_VECTOR)))
