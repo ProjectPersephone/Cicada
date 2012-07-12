@@ -50,3 +50,13 @@ lpmsp430fr5739.build.f_cpu=8000000L
 lpmsp430fr5739.build.core=msp430
 lpmsp430fr5739.build.variant=EXP430FR57xx
 ##############################################################
+
+lpcc430f5137.name=LaunchPad w/ cc430f5137
+lpcc430f5137.upload.protocol=rf2500
+lpcc430f5137.upload.maximum_size=16384
+lpcc430f5137.bootloader.lock_bits=0x0F
+lpcc430f5137.build.mcu=cc430f5137
+lpcc430f5137.build.f_cpu=1000000L
+lpcc430f5137.build.core=msp430
+lpcc430f5137.build.variant=EM430F5137RF900
+##############################################################

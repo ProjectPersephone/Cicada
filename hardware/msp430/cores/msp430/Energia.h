@@ -61,6 +61,13 @@ extern "C"{
 #define EXTERNAL ADC10SREF_2
 #endif
 
+#if defined(__MSP430_HAS_ADC12__) || defined(__MSP430_HAS_ADC12_PLUS__)
+#define DEFAULT ADC12SREF_0
+#define INTERNAL1V5 ADC12SREF_1 + ADC12REFON
+#define INTERNAL2V5 ADC12SREF_1 + ADC12REFON + ADC12REF2_5V
+#define EXTERNAL ADC12SREF_2
+#endif
+
 enum{
   P1 = 1,
   P2,

@@ -43,6 +43,10 @@
 uint16_t analog_reference = DEFAULT, analog_period = F_CPU/490, analog_div = 0, analog_res=255; // devide clock with 0, 2, 4, 8
 #endif
 
+#if defined(__MSP430_HAS_ADC12__) || defined(__MSP430_HAS_ADC12_PLUS__)
+uint16_t analog_reference = DEFAULT, analog_period = F_CPU/490, analog_div = 0, analog_res=255; // devide clock with 0, 2, 4, 8
+#endif
+
 void analogReference(uint16_t mode)
 {
 	// can't actually set the register here because the default setting
@@ -230,6 +234,8 @@ uint16_t analogRead(uint8_t pin)
 #endif
 }
 
+// make sure we have an ADC
+#if defined(__MSP430_HAS_ADC10__) || defined(__MSP430_HAS_ADC10_B__)
 __attribute__((interrupt(ADC10_VECTOR)))
 void ADC10_ISR(void)
 {
@@ -238,3 +244,4 @@ void ADC10_ISR(void)
 #endif
 	__bic_SR_register_on_exit(CPUOFF);        // return to active mode
 }
+#endif
