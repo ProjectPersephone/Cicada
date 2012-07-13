@@ -32,27 +32,44 @@
 
 void initClocks(void);
 void enableWatchDogIntervalMode(void);
-void disableWatchDog(void);
 
 void init()
 {
-    disableWatchDog();
+        disableWatchDog();
 	initClocks();
-    enableWatchDogIntervalMode();
-    __eint();
+        enableWatchDogIntervalMode();
+        __eint();
 }
 
-void disableWatchDog(void)
+void disableWatchDog()
 {
-    /* Diable watchdog timer */
+        /* Diable watchdog timer */
 	WDTCTL = WDTPW | WDTHOLD;
 }
+
+void enableWatchDog()
+{
+	enableWatchDogIntervalMode();
+}
+
+/* WDT_TICKS_PER_MILISECOND = (F_CPU / WDT_DIVIDER) / 1000
+ * WDT_TICKS_PER_MILISECONDS = 1.953125 = 2 */
+#define SMCLK_FREQUENCY F_CPU
+#if (F_CPU >= 2000000L)
+#define WDT_TICKS_PER_MILISECOND 2
+#define WDT_DIVIDER 8192
+#define WDT_DIV_BITS WDTIS0
+#else
+#define WDT_TICKS_PER_MILISECOND 2
+#define WDT_DIVIDER 512
+#define WDT_DIV_BITS WDTIS1
+#endif
 
 void enableWatchDogIntervalMode(void)
 {
 	/* WDT Password + WDT interval mode + Watchdog clock source /512 + source from SMCLK
 	 * Note that we WDT is running in interval mode. WDT will not trigger a reset on expire in this mode. */
-	WDTCTL = WDT_MDLY_0_5;
+	WDTCTL = WDTPW + WDTTMSEL + WDTCNTCL + WDT_DIV_BITS;
  
 	/* WDT interrupt enable */
 #ifdef __MSP430_HAS_SFR__
@@ -83,7 +100,7 @@ void initClocks(void)
 	/* SMCLK = DCO / DIVS = nMHz */
 	BCSCTL2 &= ~(DIVS_0);
 	/* ACLK = VLO = ~ 12 KHz */
-    BCSCTL3 |= LFXT1S_2; 
+        BCSCTL3 |= LFXT1S_2; 
 #endif
 
 #ifdef __MSP430_HAS_CS__
@@ -111,21 +128,16 @@ void initClocks(void)
 #endif
 
 }
-
-#define SMCLK_FREQUENCY F_CPU
-#define WDT_DIVIDER 512
-
-const uint32_t WDT_FREQUENCY = SMCLK_FREQUENCY / WDT_DIVIDER;
 volatile uint32_t wdtCounter = 0;
 
 unsigned long micros()
 {
-    return (1000 * wdtCounter) / (WDT_FREQUENCY / 1000);
+    return (1000 * wdtCounter) / WDT_TICKS_PER_MILISECOND;
 }
 
 unsigned long millis()
 {
-        return wdtCounter / (WDT_FREQUENCY / 1000);
+        return wdtCounter / WDT_TICKS_PER_MILISECOND;
 }
 
 /* Delay for the given number of microseconds.  Assumes a 1, 8 or 16 MHz clock. */
@@ -199,7 +211,7 @@ void delayMicroseconds(unsigned int us)
 /* (ab)use the WDT */
 void delay(uint32_t milliseconds)
 {
-	uint32_t wakeTime = wdtCounter + (milliseconds * (WDT_FREQUENCY / 1000));
+	uint32_t wakeTime = wdtCounter + (milliseconds * WDT_TICKS_PER_MILISECOND);
         while(wdtCounter < wakeTime)
                 /* Wait for WDT interrupt in LMP0 */
                 __bis_status_register(LPM0_bits+GIE);

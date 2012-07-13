@@ -85,12 +85,12 @@ void twi_init(void)
 
 	// initialize state
 	twi_state = TWI_IDLE;
-	//twi_sendStop = true;		// default value
+	twi_sendStop = true;		// default value
 	twi_inRepStart = false;
  
 //	__bic_SR_register(GIE);
-	pinMode(TWISDA,INPUT_PULLUP);
-	pinMode(TWISCL,INPUT_PULLUP);
+	pinMode(TWISDA,TWISDA_SET_MODE);
+	pinMode(TWISCL,TWISCL_SET_MODE);
 	
 #ifdef __MSP430_HAS_USI__
 	USICTL0 = USIPE6+USIPE7+USIMST+USISWRST;  // SDA/SCL
@@ -103,11 +103,34 @@ void twi_init(void)
 #endif
 
 #ifdef __MSP430_HAS_USCI__
+    //Disable the USCI module and clears the other bits of control register
+    UCB0CTL1 = UCSWRST;
+
+    /*
+     * Configure as I2C master mode.
+     * UCMST = Master mode
+     * UCMODE_3 = I2C mode
+     * UCSYNC = Synchronous mode
+	 * UCCLK = SMCLK
+     */
+    UCB0CTL1 =  UCSSEL_3 | UCSWRST;
+    UCB0CTL0 = UCMST | UCMODE_3 | UCSYNC;
+
+    /*
+     * Compute the clock divider that achieves the fastest speed less than or
+     * equal to the desired speed.  The numerator is biased to favor a larger
+     * clock divider so that the resulting clock is always less than or equal
+     * to the desired clock, never greater.
+     */
+    UCB0BR0 = (unsigned char)((F_CPU / 400000) & 0xFF);
+    UCB0BR1 = (unsigned char)((F_CPU / 400000) >> 8);
+    UCB0CTL1 &= ~(UCSWRST);
+    UCB0I2CIE |= (UCALIE|UCNACKIE|UCSTTIE|UCSTPIE); // Enable I2C interrupts
+    UC0IE |= (UCB0RXIE);                            // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     //Disable the USCI module and clears the other bits of control register
     UCB0CTLW0 = UCSWRST;
-
 
     //Configure Automatic STOP condition generation
     UCB0CTLW1 &= ~UCASTP_3;
@@ -120,11 +143,9 @@ void twi_init(void)
      * UCMST = Master mode
      * UCMODE_3 = I2C mode
      * UCSYNC = Synchronous mode
+	 * UCCLK = SMCLK
      */
-    UCB0CTLW0 = UCMST + UCMODE_3 + UCSYNC + UCSWRST;
-
-    //Configure I2C clock source
-    UCB0CTLW0 |= (UCSSEL__SMCLK);
+    UCB0CTLW0 = UCMST | UCMODE_3 | UCSSEL__SMCLK | UCSYNC | UCSWRST;
 
     /*
      * Compute the clock divider that achieves the fastest speed less than or
@@ -134,7 +155,7 @@ void twi_init(void)
      */
     UCB0BRW = (unsigned short)(F_CPU / 400000);
     UCB0CTLW0 &= ~(UCSWRST);
-    UCB0IE |= (UCRXIE0|UCTXIE0|UCALIE|UCNACKIFG|UCSTTIFG|UCSTPIFG); // Enable I2C interrupts
+    UCB0IE |= (UCRXIE0|UCALIE|UCNACKIE|UCSTTIE|UCSTPIE); // Enable I2C interrupts
 #endif
 }
 
@@ -157,7 +178,7 @@ void twi_setAddress(uint8_t address)
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
 	// UCGCEN = respond to general Call
-    UCB0I2COA0 = address | UCGCEN;
+    UCB0I2COA0 = address | UCOAEN | UCGCEN;
 ;
 #endif
 }
@@ -179,14 +200,22 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
 	USICTL0 |= USIMST; // USI master mode
 #endif
 #ifdef __MSP430_HAS_USCI__
+    UCB0CTL1 = UCSWRST;                      // Enable SW reset
+    UCB0CTL1 |= (UCSSEL_3);                  // I2C Master, synchronous mode
+    UCB0CTL0 |= (UCMST | UCMODE_3 | UCSYNC); // I2C Master, synchronous mode
+    UCB0CTL1 &= ~(UCTR);                     // Configure in receive mode
+    UCB0I2CSA = address;                     // Set Slave Address
+    UCB0CTL1 &= ~UCSWRST;                    // Clear SW reset, resume operation
+    UCB0I2CIE |= (UCALIE|UCNACKIE|UCSTTIE|UCSTPIE); // Enable I2C interrupts
+    UC0IE |= (UCB0RXIE);                            // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     UCB0CTLW0 = UCSWRST;                      // Enable SW reset
-    UCB0CTLW0 |= UCMST + UCMODE_3 + UCSYNC;   // I2C Master, synchronous mode
+    UCB0CTLW0 |= (UCMST | UCMODE_3 | UCSYNC | UCSSEL__SMCLK);   // I2C Master, synchronous mode
     UCB0CTLW0 &= ~(UCTR);                     // Configure in receive mode
     UCB0I2CSA = address;                      // Set Slave Address
     UCB0CTLW0 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= (UCRXIE0|UCTXIE0|UCALIE|UCNACKIFG|UCSTTIFG|UCSTPIFG); // Enable I2C interrupts
+    UCB0IE |= (UCRXIE0|UCALIE|UCNACKIFG|UCSTTIFG|UCSTPIFG); // Enable I2C interrupts
 #endif
 	// ensure data will fit into buffer
 	if(TWI_BUFFER_LENGTH < length){
@@ -213,11 +242,14 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
 	USICTL1 |= USIIFG;
 #endif
 #ifdef __MSP430_HAS_USCI__
+    twi_state =  TWI_MRX;                     // Master receive mode
+    while (UCB0CTL1 & UCTXSTP);               // Ensure stop condition got sent
+    UCB0CTL1 |= UCTXSTT;                      // I2C start condition
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     twi_state =  TWI_MRX;                     // Master receive mode
-    while (UCB0CTLW0 & UCTXSTP);           // Ensure stop condition got sent
-    UCB0CTLW0 |= UCTXSTT;                 // I2C start condition
+    while (UCB0CTLW0 & UCTXSTP);              // Ensure stop condition got sent
+    UCB0CTLW0 |= UCTXSTT;                     // I2C start condition
 #endif
 
 	// wait for read operation to complete
@@ -254,18 +286,28 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
 {
 	uint8_t i;
 	twi_error = TWI_ERRROR_NO_ERROR;
+	twi_sendStop = sendStop;
+
 #ifdef __MSP430_HAS_USI__
 	USICTL0 |= USIMST; // USI master mode
 #endif
 #ifdef __MSP430_HAS_USCI__
+    UCB0CTL1 = UCSWRST;                      // Enable SW reset
+    UCB0CTL0 |= (UCSSEL_3);                  // I2C Master, synchronous mode
+    UCB0CTL1 |= (UCMST | UCMODE_3 | UCSYNC); // I2C Master, synchronous mode
+    UCB0CTL1 |= UCTR;                        // Configure in transmit mode
+    UCB0I2CSA = address;                     // Set Slave Address
+    UCB0CTL1 &= ~UCSWRST;                    // Clear SW reset, resume operation
+    UCB0I2CIE |= (UCALIE|UCNACKIE|UCSTPIE);  // Enable I2C interrupts
+    UC0IE |= (UCB0TXIE);                     // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     UCB0CTLW0 = UCSWRST;                      // Enable SW reset
-    UCB0CTLW0 |= UCMST + UCMODE_3 + UCSYNC;   // I2C Master, synchronous mode
+    UCB0CTLW0 |= (UCMST | UCMODE_3 | UCSSEL__SMCLK | UCSYNC);   // I2C Master, synchronous mode
     UCB0CTLW0 |= UCTR;                        // Configure in transmit mode
     UCB0I2CSA = address;                      // Set Slave Address
     UCB0CTLW0 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= (UCRXIE0|UCTXIE0|UCALIE|UCNACKIFG|UCSTTIFG|UCSTPIFG); // Enable I2C interrupts
+    UCB0IE |= (UCTXIE0|UCALIE|UCNACKIE|UCSTPIE); // Enable I2C interrupts
 #endif
 	if(length == 0) {
 		return 0;
@@ -296,6 +338,9 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
 	USICTL1 |= USIIFG;
 #endif
 #ifdef __MSP430_HAS_USCI__
+    twi_state =  TWI_MTX;                     // Master Transmit mode
+    while (UCB0CTL1 & UCTXSTP);               // Ensure stop condition got sent
+    UCB0CTL1 |= UCTXSTT;                      // I2C start condition
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     twi_state =  TWI_MTX;                     // Master Transmit mode
@@ -325,18 +370,8 @@ uint8_t twi_transmit(const uint8_t* data, uint8_t length)
 {
   uint8_t i;
 
-#ifdef __MSP430_HAS_USI__
-#endif
-#ifdef __MSP430_HAS_USCI__
-#endif
-#ifdef __MSP430_HAS_EUSCI_B0__
-//  UCB0CTLW0 = UCSWRST;                      // Enable SW reset
-//  UCB0CTLW0 |= UCMODE_3 + UCSYNC;           // I2C Slave, synchronous mode
-//  UCB0CTLW0 &= ~(UCTR);                     // Slave requires receive Mode
-//  UCB0CTLW0 &= ~UCSWRST;                    // Clear SW reset, resume operation
-//  UCB0IE |= (UCRXIE0|UCTXIE0|UCALIE|UCNACKIFG|UCSTTIFG|UCSTPIFG); // Enable I2C interrupts
   twi_state =  TWI_STX;                     // Slave transmit mode
-#endif
+  
   // ensure data will fit into buffer
   if(TWI_BUFFER_LENGTH < length){
     return 1;
@@ -588,7 +623,134 @@ mtre:
 }
 #endif
 #ifdef __MSP430_HAS_USCI__
+__attribute__((interrupt(USCIAB0TX_VECTOR)))
+void USCI_RX_TX_ISR(void)  // RX/TX Service
+{
+    if (UC0IE & UCA0RXIFG){               // USCI I2C Mode: UCRXIFG0
+		if (twi_state ==  TWI_MRX) {      // Master receive mode
+			twi_masterBuffer[twi_masterBufferIndex++] = UCB0RXBUF; // Get RX data
+			if(twi_masterBufferIndex == twi_masterBufferLength ) 
+				UCB0CTL1 |= UCTXSTP;     // Generate I2C stop condition
+			if(twi_masterBufferIndex > twi_masterBufferLength ) {
+				twi_state = TWI_IDLE;    //Idle
+			} else {
+			}
+		} else {
+			// if there is still room in the rx buffer
+			if(twi_rxBufferIndex < TWI_BUFFER_LENGTH){
+				// put byte in buffer and ack
+				twi_rxBuffer[twi_rxBufferIndex++] = UCB0RXBUF;
+			}else{
+				// otherwise nack
+				UCB0CTL1 |= UCTXNACK;   // Generate NACK condition
+			}
+		}
+    }
+    if (UC0IE & UCA0TXIFG){              // USCI I2C Mode: UCTXIFG0
+		if (twi_state == TWI_MTX) {      // Master receive mode
+			// if there is data to send, send it, otherwise stop 
+			if(twi_masterBufferIndex < twi_masterBufferLength){
+				// copy data to output register and ack
+				UCB0TXBUF = twi_masterBuffer[twi_masterBufferIndex++];                 // Transmit data at address PTxData
+			}else{
+			   if (twi_sendStop)
+				UCB0CTL1 |= UCTXSTP;     // Generate I2C stop condition
+			   else {
+				 twi_inRepStart = true;  // we're gonna send the START
+				 // don't enable the interrupt. We'll generate the start, but we 
+				 // avoid handling the interrupt until we're in the next transaction,
+				 // at the point where we would normally issue the start.
+				 UCB0CTL1 |= UCTXSTT;        
+				 twi_state = TWI_IDLE;
+			   }
+               UC0IFG &= ~UCB0TXIFG;      // Clear USCI_B0 TX int flag
+			}
+		} else {
+			// copy data to output register
+			UCB0TXBUF = twi_txBuffer[twi_txBufferIndex++];
+			// if there is more to send, ack, otherwise nack
+			if(twi_txBufferIndex < twi_txBufferLength){
+			}else{
+				UCB0CTL1 |= UCTXNACK;    // Generate NACK condition
+			}
+		}
+	}
+}
+
+__attribute__((interrupt(USCIAB0RX_VECTOR)))
+void USCI_I2C_ISR(void)  // I2C Service
+{
+    if (UCB0STAT & UCALIFG){     // USCI I2C Mode: UCALIFG
+      // enter slave transmitter mode
+      twi_state = TWI_STX;
+      // ready the tx buffer index for iteration
+      twi_txBufferIndex = 0;
+      // set tx buffer length to be zero, to verify if user changes it
+      twi_txBufferLength = 0;
+      // request for txBuffer to be filled and length to be set
+      // note: user must call twi_transmit(bytes, length) to do this
+      twi_onSlaveTransmit();
+      // if they didn't change buffer & length, initialize it
+      if(0 == twi_txBufferLength){
+        twi_txBufferLength = 1;
+        twi_txBuffer[0] = 0x00;
+      }
+      // transmit first byte from buffer, fall
+      // copy data to output register
+      UCB0TXBUF = twi_txBuffer[twi_txBufferIndex++];
+      // if there is more to send, ack, otherwise nack
+      if(twi_txBufferIndex < twi_txBufferLength){
+        //twi_reply(1);
+      }else{
+		UCB0CTL1 |= UCTXNACK;       // Generate NACK condition
+      }
+      // leave slave receiver state
+      twi_state = TWI_IDLE;
+	  
+    }
+    if (UCB0STAT & UCNACKIFG){   // USCI I2C Mode: UCNACKIFG
+        // leave slave receiver state
+        twi_state = TWI_IDLE;
+		twi_error = TWI_ERROR_DATA_NACK;
+        __bic_SR_register_on_exit(CPUOFF); // Exit LPM0                 
+    }
+    if (UCB0STAT & UCSTTIFG){    // USCI I2C Mode: UCSTTIFG
+		if (twi_state ==  TWI_IDLE){
+			if (UCB0CTL1 &  UCTR){
+				twi_state =  TWI_STX;      // Slave Transmit mode
+				// ready the tx buffer index for iteration
+				twi_txBufferIndex = 0;
+				// set tx buffer length to be zero, to verify if user changes it
+				twi_txBufferLength = 0;
+				// request for txBuffer to be filled and length to be set
+				// note: user must call twi_transmit(bytes, length) to do this
+				twi_onSlaveTransmit();
+				// if they didn't change buffer & length, initialize it
+				if(0 == twi_txBufferLength){
+					twi_txBufferLength = 1;
+					twi_txBuffer[0] = 0x00;
+				}
+			}else{
+				twi_state =  TWI_SRX;      // Slave receive mode
+				// indicate that rx buffer can be overwritten and ack
+				twi_rxBufferIndex = 0;
+
+			}
+		}
+		if (UCB0CTL1 &  UCTR)
+			UC0IE |= (UCB0TXIE); // Enable I2C TX interrupts
+    }
+    if (UCB0STAT & UCSTPIFG){    // USCI I2C Mode: UCSTPIFG
+		if (twi_state ==  TWI_SRX){
+			// callback to user defined callback
+			twi_onSlaveReceive(twi_rxBuffer, twi_rxBufferIndex);
+		}
+		twi_state =  TWI_IDLE; // IDLE mode
+        __bic_SR_register_on_exit(CPUOFF); // Exit LPM0                 
+    }
+} 
 #endif
+
 #ifdef __MSP430_HAS_EUSCI_B0__
 __attribute__((interrupt(USCI_B0_VECTOR)))
 void USCI_B0_ISR(void)
@@ -632,10 +794,36 @@ void USCI_B0_ISR(void)
         __bic_SR_register_on_exit(CPUOFF); // Exit LPM0                 
       break;
     case USCI_I2C_UCSTTIFG:    // USCI I2C Mode: UCSTTIFG
-	  if (twi_state ==  TWI_IDLE)
-		twi_state =  TWI_SRX;      // Slave receive mode
+		if (twi_state ==  TWI_IDLE){
+			if (UCB0CTLW0 &  UCTR){
+				twi_state =  TWI_STX;      // Slave Transmit mode
+				// ready the tx buffer index for iteration
+				twi_txBufferIndex = 0;
+				// set tx buffer length to be zero, to verify if user changes it
+				twi_txBufferLength = 0;
+				// request for txBuffer to be filled and length to be set
+				// note: user must call twi_transmit(bytes, length) to do this
+				twi_onSlaveTransmit();
+				// if they didn't change buffer & length, initialize it
+				if(0 == twi_txBufferLength){
+					twi_txBufferLength = 1;
+					twi_txBuffer[0] = 0x00;
+				}
+			}else{
+				twi_state =  TWI_SRX;      // Slave receive mode
+				// indicate that rx buffer can be overwritten and ack
+				twi_rxBufferIndex = 0;
+
+			}
+		}
+		if (UCB0CTLW0 &  UCTR)
+			UCB0IE |= (UCTXIE0); // Enable I2C TX interrupts
       break;
     case USCI_I2C_UCSTPIFG:    // USCI I2C Mode: UCSTPIFG
+		if (twi_state ==  TWI_SRX){
+			// callback to user defined callback
+			twi_onSlaveReceive(twi_rxBuffer, twi_rxBufferIndex);
+		}
 		twi_state =  TWI_IDLE; // IDLE mode
         __bic_SR_register_on_exit(CPUOFF); // Exit LPM0                 
       break;
@@ -676,7 +864,7 @@ void USCI_B0_ISR(void)
 			// if there is data to send, send it, otherwise stop 
 			if(twi_masterBufferIndex < twi_masterBufferLength){
 				// copy data to output register and ack
-				UCB0TXBUF = twi_txBuffer[twi_txBufferIndex++];                 // Transmit data at address PTxData
+				UCB0TXBUF = twi_masterBuffer[twi_masterBufferIndex++];                 // Transmit data at address PTxData
 			}else{
 			   if (twi_sendStop)
 				UCB0CTLW0 |= UCTXSTP;                // Generate I2C stop condition
@@ -688,6 +876,7 @@ void USCI_B0_ISR(void)
 				 UCB0CTLW0 |= UCTXSTT;        
 				 twi_state = TWI_IDLE;
 			   }
+               UCB0IFG &= ~UCTXIFG;                  // Clear USCI_B0 TX int flag
 			}
 		} else {
 			// copy data to output register

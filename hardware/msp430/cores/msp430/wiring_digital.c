@@ -49,18 +49,17 @@ void pinMode(uint8_t pin, uint8_t mode)
 	ren = portRenRegister(port);
 	out = portOutputRegister(port);
 
-	if (mode == INPUT) {
+	if (mode & OUTPUT) {
+		*dir |= bit;
+	} else {
 		*dir &= ~bit;
-	} else if (mode == INPUT_PULLUP) {
-		*dir &= ~bit;
+		if (mode & INPUT_PULLUP) {
                 *out |= bit;
                 *ren |= bit;
-        } else if (mode == INPUT_PULLDOWN) {
-		*dir &= ~bit;
+        } else if (mode & INPUT_PULLDOWN) {
                 *out &= ~bit;
                 *ren |= bit;
-        } else {
-		*dir |= bit;
+        }
 	}
 
 	#if (defined(P1SEL_) || defined(P1SEL))
