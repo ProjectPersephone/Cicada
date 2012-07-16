@@ -1,6 +1,8 @@
 #include "RF1A.h"
 #include "cc430x513x.h"
 
+static void __inline__ delayClockCycles(register unsigned int n);
+
 // *****************************************************************************
 // @fn          Strobe
 // @brief       Send a command strobe to the radio. Includes workaround for RF1A7
@@ -34,8 +36,8 @@ unsigned char Strobe(unsigned char strobe)
         else  	
         {
           while ((RF1AIN&0x04)== 0x04);     // chip-ready ?
-          // Delay for ~810usec at 1.05MHz CPU clock, see erratum RF1A7
-          __delay_cycles(850);	            
+          delayClockCycles(6480); // Delay for ~810usec at 8MHz CPU clock, see erratum RF1A7
+		
         }
       }
       WriteSingleReg(IOCFG2, gdo_state);    // restore IOCFG2 setting
@@ -238,4 +240,13 @@ void WriteBurstPATable(unsigned char *buffer, unsigned char count)
 
   while( !(RF1AIFCTL1 & RFINSTRIFG));
   RF1AINSTRB = RF_SNOP;                     // reset PA Table pointer
+}
+
+static void __inline__ delayClockCycles(register unsigned int n)
+{
+    __asm__ __volatile__ (
+                "1: \n"
+                " dec        %[n] \n"
+                " jne        1b \n"
+        : [n] "+r"(n));
 }
