@@ -25,11 +25,6 @@ extern "C"{
 #define FALLING 1
 #define RISING 0
 
-//#define INPUT 0x0
-//#define OUTPUT 0x1
-//#define INPUT_PULLUP 0x2
-//#define INPUT_PULLDOWN 0x3
-
 #define INPUT 0x0
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
@@ -53,6 +48,8 @@ extern "C"{
 #define INTERNAL2V5 SREF_1 + REFON + REF2_5V
 #define EXTERNAL SREF_2
 #endif
+
+
 
 #if defined(__MSP430_HAS_ADC10_B__)
 #define DEFAULT ADC10SREF_0
@@ -203,7 +200,11 @@ void enableWatchDog();
 #ifdef __cplusplus
 #include "WCharacter.h"
 #include "WString.h"
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 #include "HardwareSerial.h"
+#else
+#include "TimerSerial.h"
+#endif
 
 uint16_t makeWord(uint16_t w);
 uint16_t makeWord(byte h, byte l);

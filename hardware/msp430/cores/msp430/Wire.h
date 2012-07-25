@@ -71,7 +71,7 @@ class TwoWire : public Stream
     virtual int available(void);
     virtual int read(void);
     virtual int peek(void);
-    virtual void flush(void);
+	virtual void flush(void);
     void onReceive( void (*)(int) );
     void onRequest( void (*)(void) );
   
