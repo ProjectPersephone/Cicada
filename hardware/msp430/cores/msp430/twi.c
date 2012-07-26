@@ -140,6 +140,9 @@ void twi_init(void)
     UC0IE |= UCB0RXIE | UCB0TXIE;
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
+    /* Calling this dummy function prevents the linker
+     * from stripping the USCI interupt vectors.*/ 
+    usci_isr_install();
 
 //    P1SEL1 |= BIT6 + BIT7;                  // Pin init
 

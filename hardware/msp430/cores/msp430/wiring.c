@@ -55,21 +55,25 @@ void enableWatchDog()
 /* WDT_TICKS_PER_MILISECOND = (F_CPU / WDT_DIVIDER) / 1000
  * WDT_TICKS_PER_MILISECONDS = 1.953125 = 2 */
 #define SMCLK_FREQUENCY F_CPU
-#if (F_CPU >= 2000000L)
-#define WDT_TICKS_PER_MILISECOND 2
-#define WDT_DIVIDER 8192
-#define WDT_DIV_BITS WDTIS0
-#else
-#define WDT_TICKS_PER_MILISECOND 2
-#define WDT_DIVIDER 512
-#define WDT_DIV_BITS WDTIS1
-#endif
+//#if (F_CPU >= 2000000L)
+//#define WDT_TICKS_PER_MILISECOND 2
+//#define WDT_DIVIDER 8192
+//#define WDT_DIV_BITS WDTIS0
+//#else
+//#define WDT_TICKS_PER_MILISECOND 2
+//#define WDT_DIVIDER 512
+//#define WDT_DIV_BITS WDTIS1
+//#endif
+
+#define WDT_TICKS_PER_MILISECOND (2*SMCLK_FREQUENCY/1000000)
+//#define WDT_DIVIDER 512
+#define WDT_DIV_BITS WDT_MDLY_0_5
 
 void enableWatchDogIntervalMode(void)
 {
 	/* WDT Password + WDT interval mode + Watchdog clock source /512 + source from SMCLK
 	 * Note that we WDT is running in interval mode. WDT will not trigger a reset on expire in this mode. */
-	WDTCTL = WDTPW + WDTTMSEL + WDTCNTCL + WDT_DIV_BITS;
+	WDTCTL = WDTPW | WDTTMSEL | WDTCNTCL | WDT_DIV_BITS;
  
 	/* WDT interrupt enable */
 #ifdef __MSP430_HAS_SFR__
