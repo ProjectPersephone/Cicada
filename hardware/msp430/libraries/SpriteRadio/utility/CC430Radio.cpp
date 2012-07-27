@@ -8,12 +8,12 @@
 */
 
 #include "cc430x513x.h"
-#include "MspRadio.h"
+#include "CC430Radio.h"
 
 static void __inline__ delayClockCycles(register unsigned int n);
 
 // Send a command to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-unsigned char MspRadio::strobe(unsigned char command)
+unsigned char CC430Radio::strobe(unsigned char command)
 {
 	unsigned char status_byte = 0;
 	unsigned int  gdo_state;
@@ -57,13 +57,13 @@ unsigned char MspRadio::strobe(unsigned char command)
 }
 
 // Reset the radio core - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-void MspRadio::reset(void) {
+void CC430Radio::reset(void) {
 	strobe(RF_SRES);  // Reset the radio core
 	strobe(RF_SNOP);  // Reset the radio pointer
 }
 
 // Read a single byte from the radio register - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-unsigned char MspRadio::readRegister(unsigned char address) {
+unsigned char CC430Radio::readRegister(unsigned char address) {
 	
 	unsigned char data_out;
 
@@ -86,7 +86,7 @@ unsigned char MspRadio::readRegister(unsigned char address) {
 }
 
 // Write a single byte to the radio register - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-void MspRadio::writeRegister(unsigned char address, unsigned char value) {
+void CC430Radio::writeRegister(unsigned char address, unsigned char value) {
 	
 	while (!(RF1AIFCTL1 & RFINSTRIFG));  // Wait for the Radio to be ready for next instruction
 	RF1AINSTRB = (address | RF_SNGLREGWR);	// Send address + Instruction
@@ -97,7 +97,7 @@ void MspRadio::writeRegister(unsigned char address, unsigned char value) {
 }
 
 // Write the RF configuration settings to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-void MspRadio::writeConfiguration(CC1101Settings *settings) {
+void CC430Radio::writeConfiguration(CC1101Settings *settings) {
 	writeRegister(FSCTRL1,  settings->fsctrl1);
     writeRegister(FSCTRL0,  settings->fsctrl0);
     writeRegister(FREQ2,    settings->freq2);
@@ -136,7 +136,7 @@ void MspRadio::writeConfiguration(CC1101Settings *settings) {
 }
 
 // Set radio output power registers - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-void MspRadio::writePATable(unsigned char value) {
+void CC430Radio::writePATable(unsigned char value) {
 	
 	unsigned char valueRead = 0;
 	while(valueRead != value)
@@ -172,4 +172,4 @@ static void __inline__ delayClockCycles(register unsigned int n)
         : [n] "+r"(n));
 }
 
-MspRadio Radio;
+CC430Radio Radio;

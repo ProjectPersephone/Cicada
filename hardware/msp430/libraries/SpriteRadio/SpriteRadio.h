@@ -1,26 +1,28 @@
 /*
-  SpriteCom.h - An Energia library for transmitting data using the CC430 series of devices
+  SpriteRadio.h - An Energia library for transmitting data using the CC430 series of devices
   
   by Zac Manchester
 
 */
 
-#ifndef SpriteCom_h
-#define SpriteCom_h
+#ifndef SpriteRadio_h
+#define SpriteRadio_h
 
-class SpriteCom {
+#include "utility/CC430Radio.h"
+
+class SpriteRadio {
   public:
 	
 	// Constructor - optionally supply radio register settings
-	SpriteCom();
-	SpriteCom(CC1101Settings *settings);
+	SpriteRadio();
+	SpriteRadio(CC1101Settings *settings);
 	
 	// Set the transmitter power level. Default is -30 dBm.
 	void setPower(int tx_power_dbm);
 
     // Right now this Transmits the given byte array exactly
 	// In the future it should apply FEC before transmitting
-    void transmit(char bytes[], unsigned int length);
+    void transmit(const char bytes[], unsigned int length);
 
 	// Initialize the radio - must be called before transmitting
     void radioInit();
@@ -34,4 +36,4 @@ class SpriteCom {
 	
 };
 
-#endif //SpriteCom_h
+#endif //SpriteRadio_h

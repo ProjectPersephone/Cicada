@@ -1,5 +1,5 @@
 /*
-  MspRadio.h - A low-level interface library for the CC1101 radio core in the CC430 series of devices.
+  CC430Radio.h - A low-level interface library for the CC1101 radio core in the CC430 series of devices.
 
   Adapted from the CC430 RF Examples from TI: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
   
@@ -7,8 +7,10 @@
 
 */
 
-#ifndef MspRadio_h
-#define MspRadio_h
+#ifndef CC430Radio_h
+#define CC430Radio_h
+
+#include "cc430x513x.h"
 
 // CC1101 configuration registers.  See data sheet for details: http://www.ti.com/lit/ds/symlink/cc1101.pdf
 typedef struct {
@@ -49,7 +51,7 @@ typedef struct {
     unsigned char pktlen;    // Packet length.
 } CC1101Settings;
 
-class MspRadio {
+class CC430Radio {
   public:
 	
 	// Send a command to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
@@ -72,6 +74,6 @@ class MspRadio {
 	
 };
 
-extern MspRadio Radio;
+extern CC430Radio Radio;
 
-#endif //MspRadio_h
+#endif //CC430Radio_h

@@ -1,13 +1,14 @@
 /*
-  SpriteCom.cpp - An Energia library for transmitting data using the CC430 series of devices
+  SpriteRadio.cpp - An Energia library for transmitting data using the CC430 series of devices
   
   by Zac Manchester
 
 */
 
-#include "utility/MspRadio.h"
+#include "SpriteRadio.h"
+#include "utility/CC430Radio.h"
 
-SpriteCom::SpriteCom() {
+SpriteRadio::SpriteRadio() {
 	
 	m_power = 0x03;
 	
@@ -50,14 +51,14 @@ SpriteCom::SpriteCom() {
 	};
 }
 
-SpriteCom::SpriteCom(CC1101Settings *settings) {
+SpriteRadio::SpriteRadio(CC1101Settings *settings) {
 	
 	m_power = 0x03;
 	m_settings = settings;
 }
 
 // Set the output power of the transmitter.
-SpriteCom::setPower(int tx_power_dbm) {
+void SpriteRadio::setPower(int tx_power_dbm) {
 	
 	// These values are from TI Design Note DN013 and are calibrated for operation at 434 MHz.
 	switch (tx_power_dbm) {
@@ -162,23 +163,24 @@ SpriteCom::setPower(int tx_power_dbm) {
 			break;
 		default:
 			m_power = 0x03; // -30 dBm
+		}
 }
 
-void SpriteCom::transmit(char bytes[], unsigned int length) {
+void SpriteRadio::transmit(const char bytes[], unsigned int length) {
 	
 	// For now this just transmits PRN bits
 	Radio.strobe(RF_STX);
 }
 
-void SpriteCom::radioInit() {
+void SpriteRadio::radioInit() {
 	
 	Radio.reset();
 
-	Radio.writeConfiguration(m_Settings);  // Write settings to configuratoin registers
+	Radio.writeConfiguration(m_settings);  // Write settings to configuratoin registers
 	
 	Radio.writePATable(m_power);
 }
 
-void SpriteCom::radioSleep() {
+void SpriteRadio::radioSleep() {
 	
 }
