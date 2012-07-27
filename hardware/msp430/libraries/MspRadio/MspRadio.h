@@ -1,12 +1,14 @@
 /*
-  SpriteRF.h - A basic Energia library for interfacing with the CC1101 radio core on the CC430 series of devices
+  MspRadio.h - A low-level interface library for the CC1101 radio core in the CC430 series of devices.
+
+  Adapted from the CC430 RF Examples from TI: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
   
   by Zac Manchester
 
 */
 
-#ifndef SpriteRF_h
-#define SpriteRF_h
+#ifndef MspRadio_h
+#define MspRadio_h
 
 // CC1101 configuration registers.  See data sheet for details: http://www.ti.com/lit/ds/symlink/cc1101.pdf
 typedef struct {
@@ -47,37 +49,29 @@ typedef struct {
     unsigned char pktlen;    // Packet length.
 } CC1101Settings;
 
-class SpriteRF {
+class MspRadio {
   public:
-
-    // Initialize the radio - must be called before transmitting
-    void init(CC1101Settings *settings, int tx_power_dbm);
-
-    // Transmit the given byte array exactly (no FEC or packet handling stuff)
-    void transmit(char bytes[], unsigned int length);
-
-	// Put the radio in low power mode - call after transmitting
-	void sleep();
-	
-  private:
 	
 	// Send a command to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 	unsigned char strobe(unsigned char command);
 	
+	// Reset the radio core - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
+	void reset(void);
+	
 	// Read a single byte from the radio register - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-	unsigned char readSingleReg(unsigned char address);
+	unsigned char readRegister(unsigned char address);
 	
 	// Write a single byte to the radio register - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-	void writeSingleReg(unsigned char address, unsigned char value);
+	void writeRegister(unsigned char address, unsigned char value);
 	
-	// Write the RF configuration settings to the radio
+	// Write the RF configuration settings to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 	void writeConfiguration(CC1101Settings *settings);
 	
-	// Write the RF output power setting - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
-	void writePATable(unsigned char value)
+	// Set the RF power amplifier output power - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
+	void writePATable(unsigned char value);
 	
 };
 
-extern SpriteRF Radio;
+extern MspRadio Radio;
 
-#endif //SpriteRF_h
+#endif //MspRadio_h
