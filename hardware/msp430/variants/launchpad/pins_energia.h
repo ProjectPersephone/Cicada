@@ -45,8 +45,8 @@ static const uint8_t TWISDA  = 14;  /* P1.6 */
 static const uint8_t TWISCL  = 15;  /* P1.7 */
 static const uint8_t UARTRXD = 3;  /* Receive  Data (RXD) at P1.1 */
 static const uint8_t UARTTXD = 4;  /* Transmit Data (TXD) at P1.2 */
-#define TWISDA_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 | INPUT_PULLUP)
-#define TWISCL_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 | INPUT_PULLUP)
+#define TWISDA_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 /* | INPUT_PULLUP*/) /* do not enable the pull ups for this device */
+#define TWISCL_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 /* | INPUT_PULLUP*/)
 #define UARTRXD_SET_MODE (PORT_SELECTION0 | PORT_SELECTION1 | INPUT)
 #define UARTTXD_SET_MODE (PORT_SELECTION0 | PORT_SELECTION1 | OUTPUT)
 #endif
