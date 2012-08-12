@@ -359,6 +359,7 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
 #ifdef __MSP430_HAS_USCI__
     twi_state =  TWI_MTX;                     // Master Transmit mode
 //    if (twi_inRepStart == false) 
+	UCB0CTL1 &= ~UCTXSTT;                     // I2C start condition, clear if still set
 	UCB0CTL1 |= UCTXSTT;                      // I2C start condition
     UCB0I2CIE |= (UCALIE|UCNACKIE|UCSTPIE);   // Enable I2C interrupts
     UC0IFG |= UCB0TXIFG;                      // Set TX I2C interrupt Flag
@@ -750,6 +751,7 @@ void i2c_txrx_isr(void)  // RX/TX Service
 					// at the point where we would normally issue the start.
 //					UCB0CTL1 |= UCTXSTT;
 					twi_state = TWI_IDLE;
+					UC0IE &= ~UCB0TXIE;
 					__bic_SR_register(LPM0_bits);
 				}
 			}
