@@ -36,6 +36,7 @@
 #include "Energia.h"
 #include "wiring_private.h"
 #include "usci_isr_handler.h"
+
 #if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 
 #include "HardwareSerial.h"
@@ -86,7 +87,9 @@ void HardwareSerial::begin(unsigned long baud)
 	unsigned int mod, divider;
 	unsigned char oversampling;
 	
-
+	/* Calling this dummy function prevents the linker
+	 * from stripping the USCI interupt vectors.*/ 
+	usci_isr_install();
 	if (SMCLK/baud>=48) {                                                // requires SMCLK for oversampling
 		oversampling = 1;
 	}
@@ -98,8 +101,8 @@ void HardwareSerial::begin(unsigned long baud)
 
 	SerialPtr = this;
 
-	pinMode(UARTRXD, UARTRXD_SET_MODE);
-	pinMode(UARTTXD, UARTTXD_SET_MODE);	
+	pinMode_int(UARTRXD, UARTRXD_SET_MODE);
+	pinMode_int(UARTTXD, UARTTXD_SET_MODE);	
 
 	UCA0CTL1 = UCSWRST;
 	UCA0CTL1 = UCSSEL_2;                                // SMCLK

@@ -8,7 +8,6 @@
 void usci_isr_install(){}
 
 
-#endif
 
 #if defined(__MSP430_HAS_EUSCI_A0__)
 __attribute__((interrupt(USCI_A0_VECTOR)))
@@ -21,7 +20,7 @@ void USCIA0_ISR(void)
   }  
 }
 
-#else
+#else // #if defined(__MSP430_HAS_EUSCI_A0__)
 /* USCI_Ax and USCI_Bx share the same TX interrupt vector.
  * UART: 
  *	USCIAB0TX_VECTOR services the UCA0TXIFG set in UC0IFG.
@@ -56,4 +55,5 @@ void USCIAB0RX_ISR(void)
 	if ((UCB0STAT & (UCALIFG | UCNACKIFG | UCSTTIFG | UCSTPIFG)) != 0)
 		i2c_state_isr(); 
 }
-#endif	
+#endif // #if defined(__MSP430_HAS_EUSCI_A0__)
+#endif // if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)

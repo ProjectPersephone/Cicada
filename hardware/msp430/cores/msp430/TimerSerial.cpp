@@ -12,7 +12,7 @@
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
   and
   msp430softserial by Rick Kimball
-  https://github.com7/RickKimball
+  https://github.com/RickKimball
 
   This library is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -89,8 +89,8 @@ TimerSerial::TimerSerial()
 
 void TimerSerial::begin(register unsigned long baud)
 {
-	pinMode(UARTRXD, UARTRXD_SET_MODE);
-	pinMode(UARTTXD, UARTTXD_SET_MODE);	
+	pinMode_int(UARTRXD, UARTRXD_SET_MODE);
+	pinMode_int(UARTTXD, UARTTXD_SET_MODE);	
 
     TA0CCTL0 = OUT;                     // Set TXD Idle state as Mark = '1', +3.3 volts normal
     TA0CCTL1 = SCS | CM1 | CAP | CCIE;  // Sync TACLK and MCLK, Detect Neg Edge, Enable Capture mode and RX Interrupt
@@ -157,7 +157,7 @@ size_t TimerSerial::write(uint8_t c)
     // TIMERA0 disables the interrupt flag when it has sent
     // the final stop bit. While a transmit is in progress the
     // interrupt is enabled
-    while (TACCTL0 & CCIE) {
+    while (TA0CCTL0 & CCIE) {
         ; // wait for previous xmit to finish
     }
 
