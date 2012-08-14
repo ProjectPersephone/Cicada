@@ -8,13 +8,13 @@ lpmsp430g2231.build.core=msp430
 lpmsp430g2231.build.variant=launchpad
 
 ##############################################################
-lpmsp430g2231f.name=LaunchPad w/ msp430g2231 (16MHz)
-lpmsp430g2231f.upload.protocol=rf2500
-lpmsp430g2231f.upload.maximum_size=2048
-lpmsp430g2231f.build.mcu=msp430g2231
-lpmsp430g2231f.build.f_cpu=16000000L
-lpmsp430g2231f.build.core=msp430
-lpmsp430g2231f.build.variant=launchpad
+#lpmsp430g2231f.name=LaunchPad w/ msp430g2231 (16MHz)
+#lpmsp430g2231f.upload.protocol=rf2500
+#lpmsp430g2231f.upload.maximum_size=2048
+#lpmsp430g2231f.build.mcu=msp430g2231
+#lpmsp430g2231f.build.f_cpu=16000000L
+#lpmsp430g2231f.build.core=msp430
+#lpmsp430g2231f.build.variant=launchpad
 
 ##############################################################
 lpmsp430g2452.name=LaunchPad w/ msp430g2452 (16MHz)
@@ -38,7 +38,6 @@ lpmsp430g2553.build.variant=launchpad
 lpmsp430f2274.name=LaunchPad w/ msp430f2274
 lpmsp430f2274.upload.protocol=rf2500
 lpmsp430f2274.upload.maximum_size=16384
-lpmsp430f2274.bootloader.lock_bits=0x0F
 lpmsp430f2274.build.mcu=msp430f2274
 lpmsp430f2274.build.f_cpu=16000000L
 lpmsp430f2274.build.core=msp430
@@ -48,9 +47,9 @@ lpmsp430f2274.build.variant=eZ430-RF
 lpmsp430fr5739.name=LaunchPad w/ msp430fr5739
 lpmsp430fr5739.upload.protocol=rf2500
 lpmsp430fr5739.upload.maximum_size=15872
-lpmsp430fr5739.bootloader.lock_bits=0x0F
 lpmsp430fr5739.build.mcu=msp430fr5739
 lpmsp430fr5739.build.f_cpu=16000000L
 lpmsp430fr5739.build.core=msp430
 lpmsp430fr5739.build.variant=EXP430FR57xx
+
 ##############################################################
