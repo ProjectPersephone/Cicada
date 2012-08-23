@@ -29,6 +29,7 @@
 #ifndef HardwareSerial_h
 #define HardwareSerial_h
 
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 #include <inttypes.h>
 
 #include "Stream.h"
@@ -47,8 +48,6 @@ class HardwareSerial : public Stream
 		static void USCI0RX_ISR (void);
 		static void USCI0TX_ISR (void);
 #endif		
-		void ProcessTXInt(void);
-		void ProcessRXInt(void);
 	public:
 		HardwareSerial(ring_buffer *rx_buffer, ring_buffer *tx_buffer);
 		void begin(unsigned long);
@@ -64,5 +63,7 @@ class HardwareSerial : public Stream
 extern HardwareSerial Serial;
 
 extern void serialEventRun(void) __attribute__((weak));
+
+#endif // __MSP430_HAS_USCI__
 
 #endif

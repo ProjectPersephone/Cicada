@@ -25,11 +25,6 @@ extern "C"{
 #define FALLING 1
 #define RISING 0
 
-//#define INPUT 0x0
-//#define OUTPUT 0x1
-//#define INPUT_PULLUP 0x2
-//#define INPUT_PULLDOWN 0x3
-
 #define INPUT 0x0
 #define OUTPUT 0x1
 #define INPUT_PULLUP 0x2
@@ -53,6 +48,8 @@ extern "C"{
 #define INTERNAL2V5 SREF_1 + REFON + REF2_5V
 #define EXTERNAL SREF_2
 #endif
+
+
 
 #if defined(__MSP430_HAS_ADC10_B__)
 #define DEFAULT ADC10SREF_0
@@ -154,6 +151,7 @@ void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
 uint8_t shiftIn(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder);
 unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout);
 void pinMode(uint8_t, uint8_t);
+void pinMode_int(uint8_t, uint8_t);
 void digitalWrite(uint8_t, uint8_t);
 int digitalRead(uint8_t);
 uint16_t analogRead(uint8_t);
@@ -200,6 +198,8 @@ extern const uint16_t port_to_output[];
 void delayMicroseconds(unsigned int us);
 unsigned long micros();
 unsigned long millis();
+void disableWatchDog();
+void enableWatchDog();
 
 #ifdef __cplusplus
 } // extern "C"
@@ -208,7 +208,11 @@ unsigned long millis();
 #ifdef __cplusplus
 #include "WCharacter.h"
 #include "WString.h"
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 #include "HardwareSerial.h"
+#else
+#include "TimerSerial.h"
+#endif
 
 uint16_t makeWord(uint16_t w);
 uint16_t makeWord(byte h, byte l);

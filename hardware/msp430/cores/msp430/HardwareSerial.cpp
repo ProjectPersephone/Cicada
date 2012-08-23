@@ -35,6 +35,7 @@
 #include <inttypes.h>
 #include "Energia.h"
 #include "wiring_private.h"
+#include "usci_isr_handler.h"
 
 #if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 
@@ -85,11 +86,10 @@ void HardwareSerial::begin(unsigned long baud)
 {
 	unsigned int mod, divider;
 	unsigned char oversampling;
-//	uint8_t bit;
-//	uint8_t port;
-//	volatile uint8_t *sel;
 	
-
+	/* Calling this dummy function prevents the linker
+	 * from stripping the USCI interupt vectors.*/ 
+	usci_isr_install();
 	if (SMCLK/baud>=48) {                                                // requires SMCLK for oversampling
 		oversampling = 1;
 	}
@@ -101,8 +101,8 @@ void HardwareSerial::begin(unsigned long baud)
 
 	SerialPtr = this;
 
-	pinMode(UARTRXD, UARTRXD_SET_MODE);
-	pinMode(UARTTXD, UARTTXD_SET_MODE);	
+	pinMode_int(UARTRXD, UARTRXD_SET_MODE);
+	pinMode_int(UARTTXD, UARTTXD_SET_MODE);	
 
 	UCA0CTL1 = UCSWRST;
 	UCA0CTL1 = UCSSEL_2;                                // SMCLK
@@ -199,14 +199,13 @@ size_t HardwareSerial::write(uint8_t c)
 	return 1;
 }
 
-void HardwareSerial::ProcessRXInt(void)
+void uart_rx_isr(void)
 {
 	unsigned char c = UCA0RXBUF;
 	store_char(c, &rx_buffer);
 }
 
-
-void HardwareSerial::ProcessTXInt(void)
+void uart_tx_isr(void)
 {
 	if (tx_buffer.head == tx_buffer.tail) {
 		// Buffer empty, so disable interrupts
@@ -223,31 +222,6 @@ void HardwareSerial::ProcessTXInt(void)
 	tx_buffer.tail = (tx_buffer.tail + 1) % SERIAL_BUFFER_SIZE;
 	UCA0TXBUF = c;
 }
-#if defined(__MSP430_HAS_EUSCI_A0__)
-__attribute__((interrupt(USCI_A0_VECTOR)))
-void HardwareSerial::USCIA0_ISR(void)
-{
-  switch ( UCA0IV ) 
-  { 
-    case USCI_UART_UCRXIFG: SerialPtr->ProcessRXInt(); break;
-    case USCI_UART_UCTXIFG: SerialPtr->ProcessTXInt(); break;
-  }  
-	
-	
-}
-#else
-__attribute__((interrupt(USCIAB0RX_VECTOR)))
-void HardwareSerial::USCI0RX_ISR(void)
-{
-	SerialPtr->ProcessRXInt();
-}
-
-__attribute__((interrupt(USCIAB0TX_VECTOR))) 
-void HardwareSerial::USCI0TX_ISR(void)
-{
-	SerialPtr->ProcessTXInt();
-}
-#endif	
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
 
