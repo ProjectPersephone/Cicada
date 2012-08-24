@@ -180,7 +180,7 @@ void twi_init(void)
     UCB0CTL1 &= ~(UCSWRST);
 
     /* Enable state change and TX/RX interrupts */
-    UCB0IE |= UCRXIE | UCTXIE;
+    UCB0IE |= (UCRXIE|UCTXIE|UCALIE|UCNACKIE|UCSTTIE|UCSTPIE);
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     /* Calling this dummy function prevents the linker
@@ -282,7 +282,7 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
     UCB0CTL1 &= ~(UCTR);                     // Configure in receive mode
     UCB0I2CSA = address;                     // Set Slave Address
     UCB0CTL1 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= (UCRXIE | UCTXIE);          // Enable I2C interrupts
+    UCB0IE |= (UCRXIE|UCTXIE|UCALIE|UCNACKIE|UCSTPIE); // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     UCB0CTLW0 = UCSWRST;                      // Enable SW reset
@@ -324,10 +324,10 @@ uint8_t twi_readFrom(uint8_t address, uint8_t* data, uint8_t length, uint8_t sen
     UC0IE |= (UCB0RXIE);                            // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_USCI_B0__
-    twi_state =  TWI_MRX;                     // Master receive mode
+    twi_state =  TWI_MRX; // Master receive mode
 //    if (twi_inRepStart == false) 
-	UCB0CTL1 |= UCTXSTT;                  // I2C start condition
-    UCB0IE |= (UCRXIE);                            // Enable I2C interrupts
+	UCB0CTL1 |= UCTXSTT; // I2C start condition
+    UCB0IE |= (UCRXIE|UCALIE|UCNACKIE|UCSTTIE|UCSTPIE); // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     twi_state =  TWI_MRX;                     // Master receive mode
@@ -398,13 +398,13 @@ uint8_t twi_writeTo(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait
     UC0IE |= UCB0TXIE;                     // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_USCI_B0__
-    UCB0CTL1 = UCSWRST;                      // Enable SW reset
-    UCB0CTL1 |= UCSSEL_2;                    // SMCLK
-    UCB0CTL0 |= (UCMST | UCMODE_3 | UCSYNC); // I2C Master, synchronous mode
-    UCB0CTL1 |= UCTR;                        // Configure in transmit mode
-    UCB0I2CSA = address;                     // Set Slave Address
-    UCB0CTL1 &= ~UCSWRST;                    // Clear SW reset, resume operation
-    UCB0IE |= UCTXIE;                     // Enable I2C interrupts
+    UCB0CTL1 = UCSWRST;                      	// Enable SW reset
+    UCB0CTL1 |= UCSSEL_2;                    	// SMCLK
+    UCB0CTL0 |= (UCMST | UCMODE_3 | UCSYNC); 	// I2C Master, synchronous mode
+    UCB0CTL1 |= UCTR;                        	// Configure in transmit mode
+    UCB0I2CSA = address;                     	// Set Slave Address
+    UCB0CTL1 &= ~UCSWRST;                    	// Clear SW reset, resume operation
+    UCB0IE |= (UCTXIE|UCALIE|UCNACKIE|UCSTPIE); // Enable I2C interrupts
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
     UCB0CTLW0 = UCSWRST;                      // Enable SW reset

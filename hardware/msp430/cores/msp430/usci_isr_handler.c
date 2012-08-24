@@ -1,5 +1,5 @@
 #include "Energia.h"
-#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__)
 #include "usci_isr_handler.h"
 
 /* This dummy function ensures that, when called from any module that 
@@ -9,7 +9,7 @@ void usci_isr_install(){}
 
 
 
-#if defined(__MSP430_HAS_EUSCI_A0__)
+#ifdef __MSP430_HAS_EUSCI_A0__
 __attribute__((interrupt(USCI_A0_VECTOR)))
 void USCIA0_ISR(void)
 {
@@ -19,8 +19,25 @@ void USCIA0_ISR(void)
     case USCI_UART_UCTXIFG: uart_tx_isr(); break;
   }  
 }
+#endif
 
-#else // #if defined(__MSP430_HAS_EUSCI_A0__)
+#ifdef __MSP430_HAS_USCI_B0__
+__attribute__((interrupt(USCI_B0_VECTOR))) 
+void USCI_B0_VECTOR_ISR(void)
+{
+
+	/* USCI_B0 I2C TX RX interrupt. */
+	if ((UCB0IFG & (UCTXIFG | UCRXIFG)) != 0)
+		i2c_txrx_isr();
+		
+	/* USCI_B0 I2C state change interrupt. */
+	if ((UCB0STAT & (UCALIFG | UCNACKIFG | UCSTTIFG | UCSTPIFG)) != 0)
+		i2c_state_isr();
+
+}
+#endif
+
+#ifdef __MSP430_HAS_USCI__
 /* USCI_Ax and USCI_Bx share the same TX interrupt vector.
  * UART: 
  *	USCIAB0TX_VECTOR services the UCA0TXIFG set in UC0IFG.
@@ -55,5 +72,6 @@ void USCIAB0RX_ISR(void)
 	if ((UCB0STAT & (UCALIFG | UCNACKIFG | UCSTTIFG | UCSTPIFG)) != 0)
 		i2c_state_isr(); 
 }
-#endif // #if defined(__MSP430_HAS_EUSCI_A0__)
-#endif // if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
+#endif
+
+#endif // defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__)
