@@ -15,5 +15,6 @@ strobe				KEYWORD2
 reset				KEYWORD2
 readRegister		KEYWORD2
 writeRegister		KEYWORD2
+writeTXBuffer		KEYWORD2
 writeConfiguration	KEYWORD2
 writePATable		KEYWORD2
