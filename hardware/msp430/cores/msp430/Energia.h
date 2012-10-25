@@ -208,7 +208,7 @@ void enableWatchDog();
 #ifdef __cplusplus
 #include "WCharacter.h"
 #include "WString.h"
-#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__) || defined(__MSP430_HAS_USCI_A0__)
 #include "HardwareSerial.h"
 #else
 #include "TimerSerial.h"

@@ -37,13 +37,11 @@
 #include "wiring_private.h"
 #include "usci_isr_handler.h"
 
-#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_A0__) || defined(__MSP430_HAS_EUSCI_A0__)
 
 #include "HardwareSerial.h"
 
 HardwareSerial *SerialPtr;
-
-
 
 #define SERIAL_BUFFER_SIZE 16
 
@@ -90,22 +88,23 @@ void HardwareSerial::begin(unsigned long baud)
 	/* Calling this dummy function prevents the linker
 	 * from stripping the USCI interupt vectors.*/ 
 	usci_isr_install();
-	if (SMCLK/baud>=48) {                                                // requires SMCLK for oversampling
+	
+	if (SMCLK/baud>=48) {            // requires SMCLK for oversampling
 		oversampling = 1;
+		divider=(SMCLK/16)/baud;
 	}
 	else {
 		oversampling= 0;
+		divider=SMCLK/baud;
 	}
-
-	divider=(SMCLK<<4)/baud;
 
 	SerialPtr = this;
 
 	pinMode_int(UARTRXD, UARTRXD_SET_MODE);
 	pinMode_int(UARTTXD, UARTTXD_SET_MODE);	
 
-	UCA0CTL1 = UCSWRST;
-	UCA0CTL1 = UCSSEL_2;                                // SMCLK
+	UCA0CTL1 |= UCSWRST;
+	UCA0CTL1 |= UCSSEL_2;                                // SMCLK
 	UCA0CTL0 = 0;
 	UCA0ABCTL = 0;
 #if defined(__MSP430_HAS_EUSCI_A0__)
@@ -119,6 +118,27 @@ void HardwareSerial::begin(unsigned long baud)
 	UCA0BR0 = divider;
 	UCA0BR1 = divider>>8;
 	UCA0MCTLW = (oversampling ? UCOS16:0) | mod;
+#elif defined(__MSP430_HAS_USCI_A0__)
+
+	/* USCI/UART Setup */
+	//UCA0CTL1 |= UCSWRST;  // Put the USCI module in reset
+	//UCA0CTL1 |= UCSSEL_2; // Select SMCLK as the UART clock
+
+	UCA0BR0 = 52;    // Integer part of UART frequency scaler (low byte)
+	UCA0BR1 = 0;     // Integer part of UART frequency scaler (high byte)
+	UCA0MCTL = UCBRF_1 + UCBRS_0 + UCOS16; // This turns on oversampling and sets the decimal part of the scaler
+  
+	/* Port Mapping */
+	PMAPPWD = 0x02D52;	// Get write-access to port mapping regs  
+	P1MAP1 = PM_UCA0RXD;	// Map UCA0RXD input to P1.1 
+	P1MAP2 = PM_UCA0TXD;	// Map UCA0TXD output to P1.2 
+	PMAPPWD = 0;		// Lock port mapping registers
+
+	P1DIR |= BIT2;	//Set P1.2 to output
+	P1SEL |= BIT1 | BIT2;	//Set P1.1 and P1.2 to USCI Mode
+
+	//UCA0CTL1 &= ~UCSWRST;  // Take the USCI module out of reset
+	
 #else
 	if(!oversampling) {
 		mod = ((divider&0xF)+1)&0xE;                    // UCBRSx (bit 1-3)
@@ -133,6 +153,8 @@ void HardwareSerial::begin(unsigned long baud)
 #endif	
 	UCA0CTL1 &= ~UCSWRST;
 #if defined(__MSP430_HAS_EUSCI_A0__)
+	UCA0IE = UCRXIE;
+#elif defined(__MSP430_HAS_USCI_A0__)
 	UCA0IE = UCRXIE;
 #else
 	UC0IE = UCA0RXIE;
@@ -192,6 +214,8 @@ size_t HardwareSerial::write(uint8_t c)
 
 #if defined(__MSP430_HAS_EUSCI_A0__)
 	UCA0IE |= UCTXIE;
+#elif defined(__MSP430_HAS_USCI_A0__)
+	UCA0IE |= UCTXIE;
 #else
 	UC0IE |= UCA0TXIE;
 #endif	
@@ -210,6 +234,9 @@ void uart_tx_isr(void)
 	if (tx_buffer.head == tx_buffer.tail) {
 		// Buffer empty, so disable interrupts
 #if defined(__MSP430_HAS_EUSCI_A0__)
+		UCA0IE &= ~UCTXIE;
+		UCA0IFG |= UCTXIFG;    // Set Flag again
+#elif defined(__MSP430_HAS_USCI_A0__)
 		UCA0IE &= ~UCTXIE;
 		UCA0IFG |= UCTXIFG;    // Set Flag again
 #else

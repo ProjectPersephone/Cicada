@@ -37,19 +37,19 @@
 #endif
 
 #if defined(__MSP430_HAS_USCI_A0__)
-static const uint8_t UARTRXD = 24;  /* Receive  Data (RXD) at P3.5 */
-static const uint8_t UARTTXD = 23;  /* Transmit Data (TXD) at P3.4 */
+static const uint8_t UARTRXD = 12;  /* Receive  Data (RXD) at P1.1 */
+static const uint8_t UARTTXD = 11;  /* Transmit Data (TXD) at P1.2 */
 #define UARTRXD_SET_MODE (PORT_SELECTION0 | INPUT)
 #define UARTTXD_SET_MODE (PORT_SELECTION0 | OUTPUT)
 #endif
 
 #if defined(__MSP430_HAS_USCI_B0__)
-static const uint8_t SS      = 9;  /* P1.4 */
-static const uint8_t SCK     = 4;  /* P1.7 */
-static const uint8_t MOSI    = 5;  /* P1.6 */
-static const uint8_t MISO    = 6;  /* P1.5 */
-static const uint8_t TWISDA  = 10; /* P1.3 */
-static const uint8_t TWISCL  = 11; /* P1.2 */
+//static const uint8_t SS      = 9;  /* P1.4 */
+//static const uint8_t SCK     = 4;  /* P1.7 */
+//static const uint8_t MOSI    = 5;  /* P1.6 */
+//static const uint8_t MISO    = 6;  /* P1.5 */
+static const uint8_t TWISDA  = 2; /* P2.1 */
+static const uint8_t TWISCL  = 3; /* P2.0 */
 #define TWISDA_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 | INPUT_PULLUP)
 #define TWISCL_SET_MODE  (PORT_SELECTION0 | PORT_SELECTION1 | INPUT_PULLUP)
 #endif

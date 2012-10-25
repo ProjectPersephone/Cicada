@@ -1,6 +1,6 @@
 /*
   ************************************************************************
-  *	TimerSerial.h
+  *	HardwareSerial.h
   *
   *	Arduino core files for MSP430
   *		Copyright (c) 2012 Robert Wessels. All right reserved.
@@ -29,9 +29,7 @@
 #ifndef HardwareSerial_h
 #define HardwareSerial_h
 
-#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_EUSCI_A0__)
 #include <inttypes.h>
-
 #include "Stream.h"
 
 struct ring_buffer;
@@ -60,10 +58,11 @@ class HardwareSerial : public Stream
 		using Print::write; // pull in write(str) and write(buf, size) from Print
 };
 
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_A0__) || defined(__MSP430_HAS_EUSCI_A0__)
 extern HardwareSerial Serial;
+#endif // __MSP430_HAS_USCI__
 
 extern void serialEventRun(void) __attribute__((weak));
 
-#endif // __MSP430_HAS_USCI__
 
 #endif
