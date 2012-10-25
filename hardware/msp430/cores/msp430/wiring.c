@@ -33,7 +33,6 @@
 void initClocks(void);
 void enableWatchDogIntervalMode(void);
 void disableWatchDog(void);
-static void __inline__ delayClockCycles(register unsigned int n);
 
 void init()
 {
@@ -232,7 +231,7 @@ void delay(uint32_t milliseconds)
                 __bis_status_register(LPM0_bits+GIE);
 }
 
-static void __inline__ delayClockCycles(register unsigned int n)
+void __inline__ delayClockCycles(register unsigned int n)
 {
     __asm__ __volatile__ (
                 "1: \n"

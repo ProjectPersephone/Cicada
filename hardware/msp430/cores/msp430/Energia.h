@@ -160,9 +160,8 @@ void analogReference(uint16_t);
 void analogFrequency(uint32_t);
 void analogResolution(uint16_t);
 
-
-
 void delay(uint32_t milliseconds);
+void __inline__ delayClockCycles(register unsigned int n);
 
 void attachInterrupt(uint8_t, void (*)(void), int mode);
 void detachInterrupt(uint8_t);
