@@ -1,5 +1,5 @@
 #include "Energia.h"
-#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__)
+#if defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__) || defined(__MSP430_HAS_USCI_A0__)
 #include "usci_isr_handler.h"
 
 /* This dummy function ensures that, when called from any module that 
@@ -7,7 +7,17 @@
  * installed, the linker won't strip the vectors.*/
 void usci_isr_install(){}
 
-
+#ifdef __MSP430_HAS_USCI_A0__
+__attribute__((interrupt(USCI_A0_VECTOR)))
+void USCIA0_ISR(void)
+{
+	if (UCA0IFG & UCTXIFG)
+		uart_tx_isr();
+	
+	if (UCA0IFG & UCRXIFG)
+		uart_rx_isr();
+}
+#endif
 
 #ifdef __MSP430_HAS_EUSCI_A0__
 __attribute__((interrupt(USCI_A0_VECTOR)))
@@ -74,4 +84,4 @@ void USCIAB0RX_ISR(void)
 }
 #endif
 
-#endif // defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__)
+#endif // defined(__MSP430_HAS_USCI__) || defined(__MSP430_HAS_USCI_B0__) || defined(__MSP430_HAS_EUSCI_A0__) || defined(__MSP430_HAS_USCI_A0__)
