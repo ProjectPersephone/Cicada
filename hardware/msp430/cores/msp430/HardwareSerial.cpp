@@ -120,9 +120,7 @@ void HardwareSerial::begin(unsigned long baud)
 	UCA0MCTLW = (oversampling ? UCOS16:0) | mod;
 #elif defined(__MSP430_HAS_USCI_A0__)
 
-	/* USCI/UART Setup */
-	//UCA0CTL1 |= UCSWRST;  // Put the USCI module in reset
-	//UCA0CTL1 |= UCSSEL_2; // Select SMCLK as the UART clock
+	/* USCI/UART Setup - Hard coded for 9600 baud */
 
 	UCA0BR0 = 52;    // Integer part of UART frequency scaler (low byte)
 	UCA0BR1 = 0;     // Integer part of UART frequency scaler (high byte)
@@ -136,8 +134,6 @@ void HardwareSerial::begin(unsigned long baud)
 
 	P1DIR |= BIT2;	//Set P1.2 to output
 	P1SEL |= BIT1 | BIT2;	//Set P1.1 and P1.2 to USCI Mode
-
-	//UCA0CTL1 &= ~UCSWRST;  // Take the USCI module out of reset
 	
 #else
 	if(!oversampling) {
