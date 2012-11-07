@@ -10,8 +10,6 @@
 #ifndef CC430Radio_h
 #define CC430Radio_h
 
-#include "cc430x513x.h"
-
 // CC1101 configuration registers.  See data sheet for details: http://www.ti.com/lit/ds/symlink/cc1101.pdf
 typedef struct {
 	unsigned char fsctrl1;   // Frequency synthesizer control.
@@ -65,6 +63,9 @@ class CC430Radio {
 	
 	// Write a single byte to the radio register - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 	void writeRegister(unsigned char address, unsigned char value);
+	
+	// Write data to the transmit FIFO buffer. Max length is 64 bytes.
+	void writeTXBuffer(unsigned char *data, unsigned char length);
 	
 	// Write the RF configuration settings to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 	void writeConfiguration(CC1101Settings *settings);

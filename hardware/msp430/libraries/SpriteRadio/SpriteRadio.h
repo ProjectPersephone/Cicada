@@ -17,18 +17,18 @@ class SpriteRadio {
 	SpriteRadio();
 	SpriteRadio(CC1101Settings *settings);
 	
-	// Set the transmitter power level. Default is -30 dBm.
+	// Set the transmitter power level. Default is 10 dBm.
 	void setPower(int tx_power_dbm);
 
     // Right now this Transmits the given byte array exactly
 	// In the future it should apply FEC before transmitting
-    void transmit(const char bytes[], unsigned int length);
+    void transmit(unsigned char bytes[], unsigned int length);
 
 	// Initialize the radio - must be called before transmitting
-    void radioInit();
+    void txInit();
 
 	// Put the radio in low power mode - call after transmitting
-	void radioSleep();
+	void sleep();
 	
   private:
 	CC1101Settings *m_settings;
