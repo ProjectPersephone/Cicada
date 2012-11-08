@@ -15,7 +15,7 @@ class SpriteRadio {
 	
 	// Constructor - optionally supply radio register settings
 	SpriteRadio();
-	SpriteRadio(CC1101Settings *settings);
+	SpriteRadio(CC1101Settings settings);
 	
 	// Set the transmitter power level. Default is 10 dBm.
 	void setPower(int tx_power_dbm);
@@ -31,7 +31,7 @@ class SpriteRadio {
 	void sleep();
 	
   private:
-	CC1101Settings *m_settings;
+	CC1101Settings m_settings;
 	char m_power;
 	
 };

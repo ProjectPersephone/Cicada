@@ -14,7 +14,7 @@ SpriteRadio::SpriteRadio() {
 	
 	m_power = 0xC3;
 	
-	*m_settings = (CC1101Settings){
+	m_settings = (CC1101Settings){
 	    0x0E,   // FSCTRL1
 		0x00,   // FSCTRL0
 		0x10,   // FREQ2
@@ -53,7 +53,7 @@ SpriteRadio::SpriteRadio() {
 	};
 }
 
-SpriteRadio::SpriteRadio(CC1101Settings *settings) {
+SpriteRadio::SpriteRadio(CC1101Settings settings) {
 	
 	m_power = 0xC3;
 	m_settings = settings;
@@ -232,7 +232,7 @@ void SpriteRadio::txInit() {
 	char status;
 
 	Radio.reset();
-	Radio.writeConfiguration(m_settings);  // Write settings to configuration registers
+	Radio.writeConfiguration(&m_settings);  // Write settings to configuration registers
 	Radio.writePATable(m_power);
 
 	//Put radio into idle state
