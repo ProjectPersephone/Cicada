@@ -1,5 +1,5 @@
 /*
-  MspRadio.h - A low-level interface library for the CC1101 radio core in the CC430 series of devices.
+  CC430Radio.h - A low-level interface library for the CC1101 radio core in the CC430 series of devices.
 
   Adapted from the CC430 RF Examples from TI: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
   
@@ -7,7 +7,7 @@
 
 */
 
-#include "cc430x513x.h"
+#include "cc430f5137.h"
 #include "CC430Radio.h"
 
 static void __inline__ delayClockCycles(register unsigned int n);

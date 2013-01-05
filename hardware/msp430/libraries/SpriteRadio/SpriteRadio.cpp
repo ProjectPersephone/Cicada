@@ -7,10 +7,10 @@
 
 #include "SpriteRadio.h"
 #include "utility/CC430Radio.h"
-#include "cc430x513x.h"
+#include "cc430f5137.h"
 #include "Energia.h"
 
-SpriteRadio::SpriteRadio() {
+SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[]) {
 	
 	m_power = 0xC3;
 	
@@ -51,12 +51,17 @@ SpriteRadio::SpriteRadio() {
 		0x00,   // ADDR      Device address.
 		0xFF    // PKTLEN    Packet Length (Bytes)
 	};
+
+	m_prn0 = prn0;
+	m_prn1 = prn1;
 }
 
-SpriteRadio::SpriteRadio(CC1101Settings settings) {
+SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Settings settings) {
 	
 	m_power = 0xC3;
 	m_settings = settings;
+	m_prn0 = prn0;
+	m_prn1 = prn1;
 }
 
 // Set the output power of the transmitter.
@@ -168,7 +173,22 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 		}
 }
 
-void SpriteRadio::transmit(unsigned char bytes[], unsigned int length) {
+void SpriteRadio::transmit(char bytes[], unsigned int length)
+{
+	for(unsigned int k = 0; k < length; ++k)
+	{
+		bytes[k] & BIT0 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT1 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT2 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT3 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT4 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT5 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT6 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+		bytes[k] & BIT7 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
+	}
+}
+
+void SpriteRadio::rawTransmit(unsigned char bytes[], unsigned int length) {
 	
 	char status;
 

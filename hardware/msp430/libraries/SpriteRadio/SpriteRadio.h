@@ -8,21 +8,25 @@
 #ifndef SpriteRadio_h
 #define SpriteRadio_h
 
+#define PRN_LENGTH 64 //PRN length in bytes
+
 #include "utility/CC430Radio.h"
 
 class SpriteRadio {
   public:
 	
 	// Constructor - optionally supply radio register settings
-	SpriteRadio();
-	SpriteRadio(CC1101Settings settings);
+	SpriteRadio(unsigned char prn0[], unsigned char prn1[]);
+	SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Settings settings);
 	
 	// Set the transmitter power level. Default is 10 dBm.
 	void setPower(int tx_power_dbm);
 
-    // Right now this Transmits the given byte array exactly
-	// In the future it should apply FEC before transmitting
-    void transmit(unsigned char bytes[], unsigned int length);
+    // Encode the given byte array with FEC and transmit
+    void transmit(char bytes[], unsigned int length);
+
+    // Transmit the given byte array as-is
+    void rawTransmit(unsigned char bytes[], unsigned int length);
 
 	// Initialize the radio - must be called before transmitting
     void txInit();
@@ -33,6 +37,8 @@ class SpriteRadio {
   private:
 	CC1101Settings m_settings;
 	char m_power;
+	unsigned char *m_prn0;
+	unsigned char *m_prn1;
 	
 };
 
