@@ -18,8 +18,8 @@ SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[]) {
 	    0x0E,   // FSCTRL1
 		0x00,   // FSCTRL0
 		0x10,   // FREQ2
-		0xD3,   // FREQ1
-		0xB1,   // FREQ0
+		0xD1,   // FREQ1
+		0x21,   // FREQ0
 		0x0B,   // MDMCFG4
 		0x43,   // MDMCFG3
 		0x70,   // MDMCFG2
@@ -177,6 +177,7 @@ void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
 	for(unsigned int k = 0; k < length; ++k)
 	{
+		// Use the rawTransmit function for the first bit to handle init stuff
 		bytes[k] & BIT0 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
 		bytes[k] & BIT1 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
 		bytes[k] & BIT2 ? rawTransmit(m_prn1,PRN_LENGTH) : rawTransmit(m_prn0,PRN_LENGTH);
@@ -226,13 +227,12 @@ void SpriteRadio::rawTransmit(unsigned char bytes[], unsigned int length) {
 
 		while(bytes_to_go)
 		{
-			Serial.println(bytes_to_go);
 			delay(1); //Wait for some bytes to be transmitted
 
 			bytes_free = Radio.strobe(RF_SNOP) & 0x0F;
 			bytes_to_write = bytes_free < bytes_to_go ? bytes_free : bytes_to_go;
 
-			Radio.writeTXBuffer(bytes+counter, bytes_to_write); //Write first 64 bytes to transmit buffer
+			Radio.writeTXBuffer(bytes+counter, bytes_to_write);
 			bytes_to_go -= bytes_to_write;
 			counter += bytes_to_write;
 		}
@@ -265,4 +265,5 @@ void SpriteRadio::txInit() {
 
 void SpriteRadio::sleep() {
 	
+	Radio.strobe(RF_SIDLE); //Put radio back in idle mode
 }

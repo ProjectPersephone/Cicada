@@ -22,11 +22,11 @@ class SpriteRadio {
 	// Set the transmitter power level. Default is 10 dBm.
 	void setPower(int tx_power_dbm);
 
+	// Transmit the given byte array as-is
+    void rawTransmit(unsigned char bytes[], unsigned int length);
+
     // Encode the given byte array with FEC and transmit
     void transmit(char bytes[], unsigned int length);
-
-    // Transmit the given byte array as-is
-    void rawTransmit(unsigned char bytes[], unsigned int length);
 
 	// Initialize the radio - must be called before transmitting
     void txInit();
