@@ -39,7 +39,11 @@ class SpriteRadio {
 	char m_power;
 	unsigned char *m_prn0;
 	unsigned char *m_prn1;
-	
+
+	void beginRawTransmit(unsigned char bytes[], unsigned int length);
+	void continueRawTransmit(unsigned char bytes[], unsigned int length);
+	void endRawTransmit();
+
 };
 
 #endif //SpriteRadio_h
