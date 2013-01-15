@@ -114,6 +114,24 @@ void CC430Radio::writeTXBuffer(unsigned char *data, unsigned char length) {
 	
 }
 
+// Write zeros to the transmit FIFO buffer. Max length is 64 bytes.
+void CC430Radio::writeTXBufferZeros(unsigned char length) {
+  
+  // Write Burst works wordwise not bytewise - known errata
+  unsigned char i;
+
+  while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for the Radio to be ready for next instruction
+  RF1AINSTRW = ((RF_TXFIFOWR | RF_REGWR)<<8 ) + 0; // Send address + instruction
+
+  for (i = 1; i < length; i++)
+  {
+    RF1ADINB = 0;                   // Send data
+    while (!(RFDINIFG & RF1AIFCTL1));       // Wait for TX to finish
+  } 
+  i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
+  
+}
+
 // Write the RF configuration settings to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 void CC430Radio::writeConfiguration(CC1101Settings *settings) {
 	writeRegister(FSCTRL1,  settings->fsctrl1);

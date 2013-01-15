@@ -175,19 +175,19 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 
 void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
-	// Use beginRawTransmit for the first bit to handle init stuff
-	bytes[0] & BIT0 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	//Transmit Preamble
+	beginRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
 
-	// Use continueRawTransmit for the middle bits to keep refilling the TX buffer
-	bytes[0] & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	bytes[0] & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-
-	for(unsigned int k = 1; k < length; ++k)
+	for(unsigned int k = 0; k < length; ++k)
 	{
 		bytes[k] & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 		bytes[k] & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
@@ -198,6 +198,16 @@ void SpriteRadio::transmit(char bytes[], unsigned int length)
 		bytes[k] & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 		bytes[k] & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	}
+
+	//Transmit Postamble
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
+	continueRawTransmit(0,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	endRawTransmit();
 }
@@ -265,17 +275,36 @@ void SpriteRadio::continueRawTransmit(unsigned char bytes[], unsigned int length
 	bytes_to_go = length;
 	counter = 0;
 
-	while(bytes_to_go)
+	if(bytes)
 	{
-		delay(1); //Wait for some bytes to be transmitted
+		while(bytes_to_go)
+		{
+			delay(1); //Wait for some bytes to be transmitted
 
-		bytes_free = Radio.strobe(RF_SNOP) & 0x0F;
-		bytes_to_write = bytes_free < bytes_to_go ? bytes_free : bytes_to_go;
+			bytes_free = Radio.strobe(RF_SNOP) & 0x0F;
+			bytes_to_write = bytes_free < bytes_to_go ? bytes_free : bytes_to_go;
 
-		Radio.writeTXBuffer(bytes+counter, bytes_to_write);
-		bytes_to_go -= bytes_to_write;
-		counter += bytes_to_write;
+			Radio.writeTXBuffer(bytes+counter, bytes_to_write);
+			bytes_to_go -= bytes_to_write;
+			counter += bytes_to_write;
+		}
 	}
+	else
+	{
+		while(bytes_to_go)
+		{
+			delay(1); //Wait for some bytes to be transmitted
+
+			bytes_free = Radio.strobe(RF_SNOP) & 0x0F;
+			bytes_to_write = bytes_free < bytes_to_go ? bytes_free : bytes_to_go;
+
+			Radio.writeTXBufferZeros(bytes_to_write);
+			bytes_to_go -= bytes_to_write;
+			counter += bytes_to_write;
+		}
+	}
+
+	
 
 	return;
 }
