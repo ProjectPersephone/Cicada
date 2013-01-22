@@ -29,6 +29,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#if !defined(__MSP430_HAS_USCI__) && !defined(__MSP430_HAS_EUSCI_A0__) && !defined(__MSP430_HAS_USCI_A0__)
+
 #include "Energia.h"
 #include "TimerSerial.h"
 
@@ -262,3 +264,4 @@ static void TimerSerial__RxIsr(void)
         }
     }
 }
+#endif //__MSP430_HAS_USCI__

@@ -40,6 +40,15 @@ void init()
 	initClocks();
         enableWatchDogIntervalMode();
         __eint();
+
+     /* Port Mapping for I2C - Sprite/CC430 Specific */
+  	UCB0CTL1 |= UCSWRST;
+  	PMAPPWD = 0x02D52;	// Get write-access to port mapping regs
+  	PMAPCTL = PMAPRECFG;  // Allow future runtime port mapping
+  	P2MAP0 = PM_UCB0SCL;	// Map SCL input to P2.0 
+  	P2MAP1 = PM_UCB0SDA;	// Map SDA output to P2.1 
+  	PMAPPWD = 0;		// Lock port mapping registers
+  	P2SEL |= BIT0 | BIT1;	//Set P2.0 and P2.1 to USCI Mode
 }
 
 void disableWatchDog()

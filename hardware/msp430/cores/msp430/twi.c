@@ -183,6 +183,7 @@ void twi_init(void)
     UCB0IE |= (UCRXIE|UCTXIE|UCALIE|UCNACKIE|UCSTTIE|UCSTPIE);
 #endif
 #ifdef __MSP430_HAS_EUSCI_B0__
+
     /* Calling this dummy function prevents the linker
      * from stripping the USCI interupt vectors.*/ 
     usci_isr_install();
