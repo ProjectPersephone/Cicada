@@ -173,41 +173,73 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 		}
 }
 
+char SpriteRadio::hammingEncode(char flag, char data)
+{
+	//Calculate parity bits using Hamming (15,11) code given by
+	//the following generator matrix:
+	/*unsigned char G[11][15] = {
+  		{1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  		{0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  		{0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+  		{1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+  		{1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+  		{0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+  		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+  		{0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+  		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+  		{1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+  		{1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};*/
+
+  	//Parity bytes are the 4 least significant bits of p
+  	char p = 0;
+  	p |= (((flag&BIT2)>>2)^((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<3;
+  	p |= (((flag&BIT2)>>2)^((flag&BIT1)>>1)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT2>>2))<<2;
+  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<1;
+  	p |= ((flag&BIT0)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0));
+
+
+  	return p;
+}
+
 void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
-	//Transmit Preamble
-	beginRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
+	//Transmit with begining of packet flag
+	transmitByte(BEGIN_PACKET,bytes[0]);
 
-	for(unsigned int k = 0; k < length; ++k)
+	//Transmit with no flag
+	for(int k = 1; k < length-1; ++k)
 	{
-		bytes[k] & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-		bytes[k] & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+		transmitByte((char)0, bytes[k]);
 	}
 
-	//Transmit Postamble
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
-	continueRawTransmit(0,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
+	//Transmit with end of packet flag
+	transmitByte(END_PACKET,bytes[length-1]);
+}
+
+void SpriteRadio::transmitByte(char flag, char byte)
+{
+	char parity = hammingEncode(flag, byte);
+
+	//Transmit parity bits
+	parity & BIT0 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+
+	//Transmit flag bits
+	flag & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	flag & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	flag & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	
+	//Transmit byte
+	byte & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	endRawTransmit();
 }

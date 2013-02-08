@@ -9,6 +9,8 @@
 #define SpriteRadio_h
 
 #define PRN_LENGTH 64 //PRN length in bytes
+#define BEGIN_PACKET 0x04
+#define END_PACKET 0x01
 
 #include "utility/CC430Radio.h"
 
@@ -25,6 +27,9 @@ class SpriteRadio {
 	// Transmit the given byte array as-is
     void rawTransmit(unsigned char bytes[], unsigned int length);
 
+    // Encode the given byte with FEC and transmit
+    void transmitByte(char flag, char byte);
+
     // Encode the given byte array with FEC and transmit
     void transmit(char bytes[], unsigned int length);
 
@@ -34,6 +39,8 @@ class SpriteRadio {
 	// Put the radio in low power mode - call after transmitting
 	void sleep();
 	
+	char hammingEncode(char flag, char data);
+
   private:
 	CC1101Settings m_settings;
 	char m_power;
