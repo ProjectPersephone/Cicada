@@ -221,25 +221,25 @@ void SpriteRadio::transmitByte(char flag, char byte)
 	char parity = hammingEncode(flag, byte);
 
 	//Transmit parity bits
-	parity & BIT0 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
-	parity & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT3 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	parity & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	//Transmit flag bits
-	flag & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	flag & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	flag & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	flag & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	flag & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	
 	//Transmit byte
-	byte & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	byte & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	byte & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	byte & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	endRawTransmit();
 }
