@@ -7,16 +7,15 @@
 #define SpriteMag_h
 
 typedef struct MagneticField {
-	int x;
-	int y;
-	int z;
+	float x;
+	float y;
+	float z;
 } MagneticField;
 
 class SpriteMag {
   public:
 	// Constructor
 	SpriteMag();
-	SpriteMag(MagneticField bias);
 
 	void init();
 
@@ -25,10 +24,6 @@ class SpriteMag {
   private:
   	unsigned char m_sendBufer[2];
   	unsigned char m_receiveBuffer[6];
-	
-	int m_biasx;
-	int m_biasy;
-	int m_biasz;
 
 };
 

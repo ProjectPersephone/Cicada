@@ -8,15 +8,7 @@
 #include "TI_USCI_I2C_master.h"
 
 SpriteMag::SpriteMag() {
-	m_biasx = 0;
-	m_biasy = 0;
-	m_biasz = 0;
-}
 
-SpriteMag::SpriteMag(MagneticField bias) {
-	m_biasx = bias.x;
-	m_biasy = bias.y;
-	m_biasz = bias.z;
 }
 
 void SpriteMag::init() {
@@ -45,9 +37,9 @@ MagneticField SpriteMag::read() {
 	TI_USCI_I2C_receive(m_receiveBuffer, 6);
 
 	MagneticField b;
-	b.x = (m_receiveBuffer[0] << 8) | m_receiveBuffer[1]; //+ m_biasx;
-	b.y = (m_receiveBuffer[2] << 8) | m_receiveBuffer[3]; //+ m_biasy;
-	b.z = (m_receiveBuffer[4] << 8) | m_receiveBuffer[5]; //+ m_biasz;
+	b.x = -.88*((m_receiveBuffer[0] << 8) | m_receiveBuffer[1]);
+	b.z = .88*((m_receiveBuffer[2] << 8) | m_receiveBuffer[3]);
+	b.y = -.88*((m_receiveBuffer[4] << 8) | m_receiveBuffer[5]);
 
 	return b;
 }
