@@ -9,8 +9,9 @@
 #define SpriteRadio_h
 
 #define PRN_LENGTH 64 //PRN length in bytes
-#define BEGIN_PACKET 0x04
-#define END_PACKET 0x01
+#define BEGIN_PACKET 0x01
+#define MID_PACKET 0x00
+#define END_PACKET 0x02
 
 #include "utility/CC430Radio.h"
 

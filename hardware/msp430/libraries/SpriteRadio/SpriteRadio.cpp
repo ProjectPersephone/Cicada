@@ -175,28 +175,27 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 
 char SpriteRadio::hammingEncode(char flag, char data)
 {
-	//Calculate parity bits using Hamming (15,11) code given by
-	//the following generator matrix:
-	/*unsigned char G[11][15] = {
-  		{1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-  		{0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-  		{0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+  	//Calculate parity bits using expurgated Hamming (15,10,4) code
+  	//given by the following generator matrix:	
+  	/*unsigned char G[10][15] = {
+  		{0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+  		{0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
   		{1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-  		{1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-  		{0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+  		{1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+  		{0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
   		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
   		{0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-  		{1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+  		{1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
   		{1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-  		{1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};*/
+  		{1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};*/
 
-  	//Parity bytes are the 4 least significant bits of p
+  	//Parity bytes are the 5 least significant bits of p
   	char p = 0;
-  	p |= (((flag&BIT2)>>2)^((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<3;
-  	p |= (((flag&BIT2)>>2)^((flag&BIT1)>>1)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT2>>2))<<2;
-  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<1;
-  	p |= ((flag&BIT0)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0));
-
+  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<4;
+  	p |= (((flag&BIT1)>>1)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT2>>2))<<3;
+  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<2;
+  	p |= ((flag&BIT0)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<1;
+  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT2)>>2)^(data&BIT0));
 
   	return p;
 }
@@ -206,10 +205,14 @@ void SpriteRadio::transmit(char bytes[], unsigned int length)
 	//Transmit with begining of packet flag
 	transmitByte(BEGIN_PACKET,bytes[0]);
 
+	delay(250);
+
 	//Transmit with no flag
 	for(int k = 1; k < length-1; ++k)
 	{
 		transmitByte((char)0, bytes[k]);
+
+		delay(250);
 	}
 
 	//Transmit with end of packet flag
@@ -221,13 +224,13 @@ void SpriteRadio::transmitByte(char flag, char byte)
 	char parity = hammingEncode(flag, byte);
 
 	//Transmit parity bits
-	parity & BIT3 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT4 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	//Transmit flag bits
-	flag & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	flag & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	flag & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	
