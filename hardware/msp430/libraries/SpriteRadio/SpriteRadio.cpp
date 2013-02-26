@@ -54,6 +54,9 @@ SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[]) {
 
 	m_prn0 = prn0;
 	m_prn1 = prn1;
+
+	//Initialize random number generator
+	randomSeed(((int)m_prn0[0]) + ((int)m_prn1[0]) + ((int)m_prn0[1]) + ((int)m_prn1[1]));
 }
 
 SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Settings settings) {
@@ -62,6 +65,9 @@ SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Setti
 	m_settings = settings;
 	m_prn0 = prn0;
 	m_prn1 = prn1;
+
+	//Initialize random number generator
+	randomSeed(((int)m_prn0[0]) + ((int)m_prn1[0]) + ((int)m_prn0[1]) + ((int)m_prn1[1]));
 }
 
 // Set the output power of the transmitter.
@@ -173,68 +179,72 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 		}
 }
 
-char SpriteRadio::hammingEncode(char flag, char data)
+char SpriteRadio::fecEncode(char data)
 {
-  	//Calculate parity bits using expurgated Hamming (15,10,4) code
-  	//given by the following generator matrix:	
-  	/*unsigned char G[10][15] = {
-  		{0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-  		{0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
-  		{1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-  		{1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-  		{0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
-  		{1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-  		{0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-  		{1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-  		{1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-  		{1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};*/
+  	//Calculate parity bits using a (16,8,5) block code
+  	//given by the following generator matrix:
+	/*unsigned char G[8][16] = {
+  		{1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+  		{0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+  		{1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0},
+  		{0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0},
+  		{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0},
+  		{1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+  		{0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+  		{1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1}};*/
 
-  	//Parity bytes are the 5 least significant bits of p
   	char p = 0;
-  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<4;
-  	p |= (((flag&BIT1)>>1)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT2>>2))<<3;
-  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<2;
-  	p |= ((flag&BIT0)^((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<1;
-  	p |= (((flag&BIT1)>>1)^(flag&BIT0)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT2)>>2)^(data&BIT0));
+  	p |= (((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT2)>>2)^(data&BIT0))<<7;
+  	p |= (((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT2)>>2)^(data&BIT1>>1)^(data&BIT0))<<6;
+  	p |= (((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<5;
+  	p |= (((data&BIT7)>>7)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<4;
+  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT1)>>1))<<3;
+  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT4)>>4)^(data&BIT0))<<2;
+  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^(data&BIT0))<<1;
+  	p |= (((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT0));
 
   	return p;
 }
 
 void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
-	//Transmit with begining of packet flag
-	transmitByte(BEGIN_PACKET,bytes[0]);
+	
+	delay(random(500));
 
-	delay(250);
+	//Transmit with begining of packet flag
+	transmitByte(bytes[0]);
+
+	delay(1000 + random(-500,500));
 
 	//Transmit with no flag
 	for(int k = 1; k < length-1; ++k)
 	{
-		transmitByte((char)0, bytes[k]);
+		transmitByte(bytes[k]);
 
-		delay(250);
+		delay(1000 + random(-500,500));
 	}
 
 	//Transmit with end of packet flag
-	transmitByte(END_PACKET,bytes[length-1]);
+	transmitByte(bytes[length-1]);
+
+	delay(1000 + random(-500,500));
 }
 
-void SpriteRadio::transmitByte(char flag, char byte)
+void SpriteRadio::transmitByte(char byte)
 {
-	char parity = hammingEncode(flag, byte);
+	char parity = fecEncode(byte);
 
-	//Transmit parity bits
-	parity & BIT4 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	//Transmit parity byte
+	parity & BIT7 ? beginRawTransmit(m_prn1,PRN_LENGTH) : beginRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+	parity & BIT4 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT3 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	parity & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-
-	//Transmit flag bits
-	flag & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
-	flag & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	
-	//Transmit byte
+	//Transmit data byte
 	byte & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	byte & BIT6 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	byte & BIT5 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);

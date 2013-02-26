@@ -29,7 +29,7 @@ class SpriteRadio {
     void rawTransmit(unsigned char bytes[], unsigned int length);
 
     // Encode the given byte with FEC and transmit
-    void transmitByte(char flag, char byte);
+    void transmitByte(char byte);
 
     // Encode the given byte array with FEC and transmit
     void transmit(char bytes[], unsigned int length);
@@ -40,7 +40,7 @@ class SpriteRadio {
 	// Put the radio in low power mode - call after transmitting
 	void sleep();
 	
-	char hammingEncode(char flag, char data);
+	char fecEncode(char data);
 
   private:
 	CC1101Settings m_settings;
