@@ -181,27 +181,24 @@ void SpriteRadio::setPower(int tx_power_dbm) {
 
 char SpriteRadio::fecEncode(char data)
 {
-  	//Calculate parity bits using a (16,8,5) block code
+  	//Calculate parity bits using a (12,8,3) block code
   	//given by the following generator matrix:
-	/*unsigned char G[8][16] = {
-  		{1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0},
-  		{0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-  		{1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0},
-  		{0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0},
-  		{0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0},
-  		{1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-  		{0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-  		{1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1}};*/
+	/*unsigned char G[8][12] = {
+ 		 {1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0},
+ 		 {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+ 		 {1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+ 		 {1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0},
+ 		 {1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+ 		 {1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+ 		 {1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0},
+	 	 {0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1}};*/
 
-  	char p = 0;
-  	p |= (((data&BIT7)>>7)^((data&BIT5)>>5)^((data&BIT2)>>2)^(data&BIT0))<<7;
-  	p |= (((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT2)>>2)^(data&BIT1>>1)^(data&BIT0))<<6;
-  	p |= (((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<5;
-  	p |= (((data&BIT7)>>7)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0))<<4;
-  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT1)>>1))<<3;
-  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT4)>>4)^(data&BIT0))<<2;
-  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^(data&BIT0))<<1;
-  	p |= (((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^(data&BIT0));
+ 	//Also prepend 1,0,1,0 to the parity bits to help the receiver figure out allignment
+  	char p = 0b10100000;
+  	p |= (((data&BIT7)>>7)^((data&BIT6)>>6)^((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^((data&BIT1)>>1))<<3;
+  	p |= (((data&BIT5)>>5)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT2)>>2)^(data&BIT0))<<2;
+  	p |= (((data&BIT6)>>6)^((data&BIT4)>>4)^((data&BIT3)>>3)^((data&BIT1)>>1)^(data&BIT0))<<1;
+  	p |= (((data&BIT7)>>7)^((data&BIT4)>>4)^((data&BIT2)>>2)^((data&BIT1)>>1)^(data&BIT0));
 
   	return p;
 }
