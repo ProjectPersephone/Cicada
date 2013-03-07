@@ -222,11 +222,10 @@ void SpriteRadio::transmitByte(char byte)
 {
 	char parity = fecEncode(byte);
 
-	//Transmit preamble (1010)
+	//Transmit preamble (101)
 	beginRawTransmit(m_prn1,PRN_LENGTH);
 	continueRawTransmit(m_prn0,PRN_LENGTH);
 	continueRawTransmit(m_prn1,PRN_LENGTH);
-	continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	//Transmit parity byte
 	parity & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
@@ -247,6 +246,11 @@ void SpriteRadio::transmitByte(char byte)
 	byte & BIT2 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	byte & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
 	byte & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH) : continueRawTransmit(m_prn0,PRN_LENGTH);
+
+	//Transmit postamble (010)
+	continueRawTransmit(m_prn0,PRN_LENGTH);
+	continueRawTransmit(m_prn1,PRN_LENGTH);
+	continueRawTransmit(m_prn0,PRN_LENGTH);
 
 	endRawTransmit();
 }
