@@ -63,6 +63,7 @@ SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Setti
 	
 	m_power = 0xC3;
 	m_settings = settings;
+	
 	m_prn0 = prn0;
 	m_prn1 = prn1;
 
@@ -346,8 +347,6 @@ void SpriteRadio::continueRawTransmit(unsigned char bytes[], unsigned int length
 			counter += bytes_to_write;
 		}
 	}
-
-	
 
 	return;
 }
