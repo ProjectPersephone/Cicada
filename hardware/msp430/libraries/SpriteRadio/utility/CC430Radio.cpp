@@ -108,9 +108,9 @@ void CC430Radio::writeTXBuffer(unsigned char *data, unsigned char length) {
 	for (i = 1; i < length; i++)
 	{
 	  RF1ADINB = data[i];                   // Send data
-	  while (!(RFDINIFG & RF1AIFCTL1));       // Wait for TX to finish
+	  while (!(RFDINIFG & RF1AIFCTL1));     // Wait for TX to finish
 	} 
-	i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
+	i = RF1ADOUTB;                          // Reset RFDOUTIFG flag which contains status byte
 	
 }
 
@@ -125,10 +125,28 @@ void CC430Radio::writeTXBufferZeros(unsigned char length) {
 
   for (i = 1; i < length; i++)
   {
-    RF1ADINB = 0;                   // Send data
+    RF1ADINB = 0;                           // Send data
     while (!(RFDINIFG & RF1AIFCTL1));       // Wait for TX to finish
   } 
   i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
+  
+}
+
+// Read data from the receive FIFO buffer. Max length is 64 bytes.
+void CC430Radio::readRXBuffer(unsigned char *data, unsigned char length) {
+
+  unsigned int i;
+
+  while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for INSTRIFG
+  RF1AINSTR1B = (RF_RXFIFORD | RF_REGRD);   // Send addr of first conf. reg. to be read 
+                                            // ... and the burst-register read instruction
+  for (i = 0; i < (length-1); i++)
+  {
+    while (!(RFDOUTIFG&RF1AIFCTL1));        // Wait for the Radio Core to update the RF1ADOUTB reg
+    data[i] = RF1ADOUT1B;                   // Read DOUT from Radio Core + clears RFDOUTIFG
+                                            // Also initiates auo-read for next DOUT byte
+  }
+  buffer[length-1] = RF1ADOUT0B;            // Store the last DOUT from Radio Core  
   
 }
 

@@ -69,6 +69,9 @@ class CC430Radio {
 
     // Write zeros to the transmit FIFO buffer. Max length is 64 bytes.
     void writeTXBufferZeros(unsigned char length);
+
+    // Read data from receive FIFO buffer. Max length is 64 bytes
+    void readRXBuffer(unsigned char *data, unsigned char length);
 	
 	// Write the RF configuration settings to the radio - adapted from TI example code: http://www.ti.com/lit/an/slaa465b/slaa465b.pdf
 	void writeConfiguration(CC1101Settings *settings);
