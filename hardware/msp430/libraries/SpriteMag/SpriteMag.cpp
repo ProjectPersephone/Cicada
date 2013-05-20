@@ -37,9 +37,10 @@ MagneticField SpriteMag::read() {
 	TI_USCI_I2C_receive(m_receiveBuffer, 6);
 
 	MagneticField b;
-	b.x = -.88*((m_receiveBuffer[0] << 8) | m_receiveBuffer[1]);
-	b.z = .88*((m_receiveBuffer[2] << 8) | m_receiveBuffer[3]);
-	b.y = -.88*((m_receiveBuffer[4] << 8) | m_receiveBuffer[5]);
+	//Units are microtesla
+	b.x = -.073*((m_receiveBuffer[0] << 8) | m_receiveBuffer[1]);
+	b.z = .073*((m_receiveBuffer[2] << 8) | m_receiveBuffer[3]);
+	b.y = -.073*((m_receiveBuffer[4] << 8) | m_receiveBuffer[5]);
 
 	return b;
 }
