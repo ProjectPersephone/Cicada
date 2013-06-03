@@ -146,7 +146,7 @@ void CC430Radio::readRXBuffer(unsigned char *data, unsigned char length) {
     data[i] = RF1ADOUT1B;                   // Read DOUT from Radio Core + clears RFDOUTIFG
                                             // Also initiates auo-read for next DOUT byte
   }
-  buffer[length-1] = RF1ADOUT0B;            // Store the last DOUT from Radio Core  
+  data[length-1] = RF1ADOUT0B;            // Store the last DOUT from Radio Core  
   
 }
 
