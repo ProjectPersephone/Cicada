@@ -209,13 +209,13 @@ char SpriteRadio::fecEncode(char data)
 
 void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
-	delay(1000 + random(-500,500));
+	delay(random(0, 2000));
 
 	for(int k = 0; k < length; ++k)
 	{
 		transmitByte(bytes[k]);
 
-		delay(1000 + random(-500,500));
+		delay(random(8000, 12000));
 	}
 }
 
