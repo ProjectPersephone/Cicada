@@ -8,7 +8,7 @@
 #ifndef SpriteRadio_h
 #define SpriteRadio_h
 
-#define PRN_LENGTH 80 //PRN length in bytes
+#define PRN_LENGTH_BYTES 64
 
 #include "utility/CC430Radio.h"
 

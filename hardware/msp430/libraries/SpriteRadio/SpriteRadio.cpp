@@ -61,7 +61,7 @@ SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[]) {
 
 SpriteRadio::SpriteRadio(unsigned char prn0[], unsigned char prn1[], CC1101Settings settings) {
 	
-	m_power = 0xC3;
+	m_power = 0xC0;
 	m_settings = settings;
 	
 	m_prn0 = prn0;
