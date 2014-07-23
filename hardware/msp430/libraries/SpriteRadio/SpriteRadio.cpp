@@ -209,6 +209,16 @@ char SpriteRadio::fecEncode(char data)
 
 void SpriteRadio::transmit(char bytes[], unsigned int length)
 {
+#ifdef SR_DEMO_MODE
+
+	for(int k = 0; k < length; ++k)
+	{
+		transmitByte(bytes[k]);
+		delay(1000);
+	}
+
+#else
+
 	delay(random(0, 2000));
 
 	for(int k = 0; k < length; ++k)
@@ -217,6 +227,8 @@ void SpriteRadio::transmit(char bytes[], unsigned int length)
 
 		delay(random(8000, 12000));
 	}
+
+#endif
 }
 
 void SpriteRadio::transmitByte(char byte)

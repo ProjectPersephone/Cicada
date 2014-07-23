@@ -8,6 +8,8 @@
 #ifndef SpriteRadio_h
 #define SpriteRadio_h
 
+#define SR_DEMO_MODE
+
 #define PRN_LENGTH_BYTES 64
 
 #include "utility/CC430Radio.h"
@@ -45,6 +47,8 @@ class SpriteRadio {
 	unsigned char *m_prn0;
 	unsigned char *m_prn1;
 
+	void transmitReal(char bytes[], unsigned int length);
+	void transmitDemo(char bytes[], unsigned int length);
 	void beginRawTransmit(unsigned char bytes[], unsigned int length);
 	void continueRawTransmit(unsigned char bytes[], unsigned int length);
 	void endRawTransmit();
