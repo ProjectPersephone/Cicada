@@ -235,10 +235,14 @@ void SpriteRadio::transmitByte(char byte)
 {
 	char parity = fecEncode(byte);
 
-	//Transmit preamble (101)
+	//Transmit preamble (1110010)
 	beginRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 
 	//Transmit parity byte
 	parity & BIT7 ? continueRawTransmit(m_prn1,PRN_LENGTH_BYTES) : continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
@@ -260,9 +264,13 @@ void SpriteRadio::transmitByte(char byte)
 	byte & BIT1 ? continueRawTransmit(m_prn1,PRN_LENGTH_BYTES) : continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 	byte & BIT0 ? continueRawTransmit(m_prn1,PRN_LENGTH_BYTES) : continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 
-	//Transmit postamble (010)
+	//Transmit postamble (1011000)
+	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
 	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn1,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
+	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 	continueRawTransmit(m_prn0,PRN_LENGTH_BYTES);
 
 	endRawTransmit();
