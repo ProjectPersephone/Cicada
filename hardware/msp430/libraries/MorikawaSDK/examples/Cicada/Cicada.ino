@@ -1,26 +1,28 @@
-// Sprite-specific heading; MorikawaSDK code follows
+// 2013 Sprite-specific code here; MorikawaSDK ARTSAT DESPATCH code follows
 
 #define SPRITE
-
-// For debugging: ...
-#define USE_SPRITE_RADIO     // ... comment this out to save waiting
+#define USE_SPRITE_RADIO  // ... comment this out to save waiting
 
 #ifdef SPRITE
+
+// ~~~~~~~~~~~~ Sprite (vintage 2013) Magnetometer ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
 // From https://github.com/kicksat/Sprites/wiki/Code-Examples
 
 #include <SpriteMag.h>
 
 SpriteMag sprite_mag = SpriteMag();
 
-// From https://github.com/lfdebrux/TemperatureSensor/tree/master/examples/sprite_temp
-// Not sure if variable temp needs to be global, for this library.
-// Maybe premult does need to be.
+
+// ~~~~~~~~~~~~ Sprite (vintage 2013) Temperature Sensor ~~~~~~~~~~~~~~~~~~~~~
+//
+// https://github.com/lfdebrux/TemperatureSensor/tree/master/examples/sprite_temp
 
 #include <temp.h>
 
-int32_t temp;
-
-// From https://github.com/kicksat/Sprites/blob/master/Software/Test_Code/RadioData/RadioData.ino
+// ~~~~~~~~~~~~ Sprite (vintage 2013) Radio ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// https://github.com/kicksat/Sprites/blob/master/Software/Test_Code/RadioData/RadioData.ino
 
 #include <SpriteRadio.h>
 
@@ -56,33 +58,37 @@ unsigned char prn3[64] = {
 //Initialize the radio class, supplying the Gold Codes that correspond to 0 and 1
 SpriteRadio sprite_radio = SpriteRadio(prn2, prn3);
 
+// ~~~~~~~~~~~~ Sprite (vintage 2013) Gyro ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//
+// Originally:
+// https://github.com/kicksat/Sprites/blob/master/Software/Test_Code/GyroDemo/GyroDemo.ino
+// 
+// It has been modified to eliminate the SpriteRadio interface (already
+// supplied, above), the serial setup/message (ditto), the sprintf call
+// (the Sprite2 runtime library seems to lack printf's, while some
+// debugging output goes out by Serial.print calls instead of radio
+// transmission.)
+
 #include <SpriteGyro.h>
 
-// The following code is from 
-//    https://github.com/kicksat/Sprites/blob/master/Software/Test_Code/GyroDemo/GyroDemo.ino
-// It has been modified to eliminate the SpriteRadio interface (already
-// supplied, see below), the serial setup/message (ditto), the sprintf call
-// (since the Sprite2 runtime library seems to lack printf', while some
-// debugging output goes out by Serial.print calls instead of radio
-// transmission.
-
-//Initialize the radio class, supplying the Gold Codes that correspond to 0 and 1
-// SpriteRadio radio = SpriteRadio(prn2, prn3);
 SpriteGyro gyro = SpriteGyro();
 
-#include <pins_energia.h>
+ 
+// ~~~~~~~~~~~~ AVR program space compatibility retrofit ~~~~~~~~~~~~~~~~~~~~~
+//
 
 #include <avr/pgmspace.h>
 #define strncpy_P(s1,s2,n) strncpy(s1,s2,n) // not in avr/pgmspace.h
 
 #endif // SPRITE
 
-
-// The following code for Arduino 1.0.5 was ported to Arduino 1.5,
-// then modified for Energia and the KickSat Sprite (vintage 2013.)
-// Compiles under a version of Energia (2013 or so) for the original
-// Sprite, and runs on that platform. DID compile for Arduino 1.5
-// (with many warnings) but might not now.
+// The following code for Arduino 1.0.5 was ported to Arduino 1.5+,
+// then modified for vintage-2013 Energia and the KickSat Sprite.
+// It compiles under a version of Energia (2013 or so) for the original
+// Sprite, and it runs on that platform. Much of the code refers
+// to devices on the ARTSAT2 DESPATCH spacecraft, but conditional
+// compilation (#ifdef SPRITE) is used, where necessary, to
+// substitute for readings from the Sprite's devices.
 
 /*
 **      ARTSAT Despatch Application
@@ -163,8 +169,13 @@ SpriteGyro gyro = SpriteGyro();
 #define INDEX_LIMIT                 (0x300)
 #define COUNT_LIMIT                 (8)
 #define AVERAGE_SIZE                (3)
+#ifdef SPRITE
+#define RANGE_TEMPERATURE_MAXIMUM   (+180)
+#define RANGE_TEMPERATURE_MINIMUM   (-180)
+#else
 #define RANGE_TEMPERATURE_MAXIMUM   (+250)
 #define RANGE_TEMPERATURE_MINIMUM   (-110)
+#endif
 #define RANGE_ACCEL_MAXIMUM         (+32767)
 #define RANGE_ACCEL_MINIMUM         (-32768)
 #define RANGE_GYRO_MAXIMUM          (+32767)
@@ -177,10 +188,23 @@ SpriteGyro gyro = SpriteGyro();
 #define RANGE_RSSI_MINIMUM          (0)
 #define RANGE_RADIO_MAXIMUM         (+32767)
 #define RANGE_RADIO_MINIMUM         (0)
+
+#ifdef SPRITE
+#define LIMIT_TEMPERATURE_MAXIMUM   (3000) // > 140 C
+#define LIMIT_TEMPERATURE_MINIMUM   (0)  // < -170 C
+#else
 #define LIMIT_TEMPERATURE_MAXIMUM   (19296) // +102 (+51degC)
 #define LIMIT_TEMPERATURE_MINIMUM   (7827)  // -24 (-12degC)
+#endif
+
+#ifdef SPRITE
+#define LIMIT_GYRO_MAXIMUM          (2000) // +1311 (+10deg/sec)
+#define LIMIT_GYRO_MINIMUM          (-2000) // -1311 (-10deg/sec)
+#else
 #define LIMIT_GYRO_MAXIMUM          (17039) // +1311 (+10deg/sec)
 #define LIMIT_GYRO_MINIMUM          (15728) // -1311 (-10deg/sec)
+#endif
+
 #define LIMIT_CURRENT_MAXIMUM       (18633) // +4500 (+4.5A)
 #define LIMIT_CURRENT_MINIMUM       (16133) // -500 (-0.5A)
 #define WAIT_LM75A                  (350)   // typical 100ms, limits 300ms
@@ -308,13 +332,14 @@ void setup(void)
 #ifdef TARGET_BUILD_DEBUG
       Serial.println ("Sprite is DESPATCHING ....");
       delay (300);
-#endif;
+#endif
 
       sprite_radio.txInit();
       gyro.init();
       premult = 10; // for temp, global var?
       mainTempCalibrate();
       mainTempRead(); // first reading is usually spurious
+
       sprite_mag.init();
 #endif
 
@@ -426,26 +451,36 @@ void loop(void)
     unsigned long address;
 #ifdef TARGET_BUILD_DEBUG
     int debug(Serial.read());
-    int i;
 #endif
+    int i;
     
     Morikawa.loop();
+    // delay (300);
     
 #ifdef SPRITE    
 #ifdef TARGET_BUILD_DEBUG
-    Serial.println("Cicada...");
     delay (300);
     {
-    AngularVelocity w = gyro.read();
-    Serial.println("gyro x,y,z: "); Serial.println(w.x); Serial.println(w.y); Serial.println(w.z);
-    // float wz = w.z/14.375; // why?
+    // AngularVelocity w = gyro.read();
+    // Serial.print("gyro x,y,z: ");
+    // Serial.print ("<"); Serial.print(w.x);
+    // Serial.print (","); Serial.print(w.y);
+    // Serial.print (","); Serial.print(w.z);
+    // Serial.println (">");
+    // //  float wz = w.z/14.375; // why?
     }
-    temp = mainTempRead();
-    Serial.print("temp: "); Serial.print(temp / 10); Serial.print('.'); Serial.print(temp % 10); Serial.println(" deg");
+    {
+    uint32_t temp = mainTempRead();
+    Serial.print("temp: "); Serial.print(temp / premult); Serial.print('.'); Serial.print(temp % premult); Serial.println(" deg");
+    }
     {
     MagneticField b = sprite_mag.read();
-    Serial.println("mag x,y,z "); Serial.println(b.x); Serial.println(b.y); Serial.println(b.z);
-    delay(250);
+    Serial.print("mag <x,y,z> ="); 
+    Serial.print ("<"); Serial.print(b.x);
+    Serial.print (","); Serial.print(b.y);
+    Serial.print (","); Serial.print(b.z);
+    Serial.println (">");
+    // delay(250);
     }
 #endif // TARGET_BUILD_DEBUG
 #endif // SPRITE
@@ -531,12 +566,7 @@ void loop(void)
 #endif
 
 #ifdef SPRITE
-    // Serial.print ("g_poem = ");
-    // Serial.println (g_poem);
-    // Serial.print ("g_sensor = ");
-    // Serial.println (g_sensor);
-    Serial.print ("g_count = "); Serial.println (g_count);
-    // Serial.print ("g_index = "); Serial.println (g_index);
+   Serial.print ("g_count="); Serial.println (g_count);
 #endif
 
 #ifdef SPRITE
@@ -702,6 +732,7 @@ static void samplingSensorHot(void)
             __debug__(getLM75A(I2C_LM75A_KEEL, &value[4][i]), 54);
         }
 #ifdef TARGET_BUILD_DEBUG
+#if 000
         Serial.print("    LM75A Board, TX, Battery, Wall, Keel = ");
         Serial.println(value[0][i]);
         // Serial.print(", TX = ");
@@ -712,6 +743,7 @@ static void samplingSensorHot(void)
         Serial.println(value[3][i]);
         // Serial.print(", Keel = ");
         Serial.println(value[4][i]);
+#endif
 #endif
     }
     g_board_t = average(value[0]);
@@ -728,6 +760,7 @@ static void samplingSensorHot(void)
             __debug__(getMPU6500(I2C_MPU6500, &value[0][i], &value[1][i], &value[2][i], &value[3][i], &value[4][i], &value[5][i]), 60);
         }
 #ifdef TARGET_BUILD_DEBUG
+#if 000
         Serial.println("    MPU6500 Accel X,Y,Z, gyro X/Y/Z = ");
         Serial.println(value[0][i]);
         // Serial.print(", Y = ");
@@ -740,6 +773,7 @@ static void samplingSensorHot(void)
         Serial.println(value[4][i]);
         // Serial.print(", Z = ");
         Serial.println(value[5][i]);
+#endif
 #endif
     }
     g_gyro_x = average(value[3]);
@@ -754,10 +788,12 @@ static void samplingSensorHot(void)
             __debug__(getINA226(I2C_INA226, &value[0][i], &value[1][i]), 70);
         }
 #ifdef TARGET_BUILD_DEBUG
+#if 000
         Serial.print("    INA226 Voltage = ");
         Serial.print(value[0][i]);
         Serial.print(", Current = ");
         Serial.println(value[1][i]);
+#endif
 #endif
     }
     g_battery_v = average(value[0]);
@@ -1025,10 +1061,14 @@ static char getLM75A(int i2c, int* temperature)
     short value;
     TSTError error(TSTERROR_OK);
 #ifdef SPRITE
-     // same temp no matter what; DESPATCH had several temp sensors
-     // some noise in these readings though; use the noise somehow?
-  if (temperature)
-	*temperature = mainTempRead();
+     // Same temp sensor no matter what; DESPATCH had several temp sensors.
+     // Some noise in these readings though; use the noise somehow?
+  if (temperature) {
+	unsigned int raw_temp = cc430Read();
+        // Serial.print ("raw temp: "); Serial.println (raw_temp);
+	// *temperature = mainTempRead();
+	*temperature = raw_temp;
+  }
 #else
     I2Cm.clear();
     I2Cm.write(0b00000000);
@@ -1061,6 +1101,12 @@ static char getMPU6500(int i2c, int* ax, int* ay, int* az, int* gx, int* gy, int
 #ifdef SPRITE
   AngularVelocity w = gyro.read();
 # define SETIFNOTNULL(p,v) if (p) *(p) = v
+
+   Serial.print("getMPU6500 faker: gyro <x,y,z>: ");
+   Serial.print (": <"); Serial.print(w.x);
+   Serial.print (",");  Serial.print (w.y);
+   Serial.print (",");  Serial.print (w.z);
+   Serial.println(">");
   SETIFNOTNULL(ax,w.x);
   SETIFNOTNULL(ay,w.y);
   SETIFNOTNULL(az,w.z);
@@ -1244,4 +1290,3 @@ static void makeBaudotRhythm(char* buffer, int lvalue, bool lvalid, int rvalue, 
     buffer[9] = 'N';
     return;
 }
-
