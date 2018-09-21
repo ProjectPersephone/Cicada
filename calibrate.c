@@ -5,7 +5,12 @@
 	Released into the public domain
 */
 
+#ifdef ENERGIA
 #include "Energia.h"
+#else
+#include "Arduino.h"
+#endif
+
 #include "temp.h"
 
 void setMainGainOffset(int8_t new_gain, int32_t new_offset)

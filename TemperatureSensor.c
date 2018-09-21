@@ -5,7 +5,12 @@
 	Released into the public domain
 */
 
+#ifdef ENERGIA
 #include "Energia.h"
+#else
+#include "Arduino.h"
+#endif
+
 #include "temp.h"
 
 #include "TI_USCI_I2C_master.h"
