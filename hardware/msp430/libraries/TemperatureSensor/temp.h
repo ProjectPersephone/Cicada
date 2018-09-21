@@ -34,6 +34,10 @@ int32_t gyroTempRead(void);
 void mainTempCalibrate(void);
 void setMainGainOffset(int8_t new_gain,int32_t new_offset);
 
+// sneaking in something invisible
+
+uint16_t cc430Read();
+
 #ifdef __cplusplus
 }
 #endif
