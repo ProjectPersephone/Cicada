@@ -8,7 +8,11 @@
 #ifndef temp_h
 #define temp_h
 
+#ifdef ENERGIA
 #include "Energia.h"
+#else
+#include "Arduino.h"
+#endif
 
 // need cc430f5137 with 12-bit ADC
 #if defined(__MSP430_HAS_ADC12_PLUS__)
@@ -29,6 +33,10 @@ int32_t mainTempRead(void);
 int32_t gyroTempRead(void);
 void mainTempCalibrate(void);
 void setMainGainOffset(int8_t new_gain,int32_t new_offset);
+
+// sneaking in something invisible
+
+uint16_t cc430Read();
 
 #ifdef __cplusplus
 }
