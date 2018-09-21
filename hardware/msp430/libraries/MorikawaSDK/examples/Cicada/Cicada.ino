@@ -140,7 +140,7 @@ SpriteGyro gyro = SpriteGyro();
 #endif
 #include "WordTable.h"
 
-#define TARGET_BUILD_DEBUG
+// #define TARGET_BUILD_DEBUG
 //#define TARGET_DEBUG_AUTO
 
 //#define TARGET_USE_RADIO
