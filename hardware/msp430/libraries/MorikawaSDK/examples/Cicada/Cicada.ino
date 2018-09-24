@@ -205,8 +205,13 @@ SpriteGyro gyro = SpriteGyro();
 #define LIMIT_GYRO_MINIMUM          (15728) // -1311 (-10deg/sec)
 #endif
 
+#ifdef SPRITE
+#define LIMIT_CURRENT_MAXIMUM       (50) // remapping magnetometer readings actually
+#define LIMIT_CURRENT_MINIMUM       (-50)
+#else
 #define LIMIT_CURRENT_MAXIMUM       (18633) // +4500 (+4.5A)
 #define LIMIT_CURRENT_MINIMUM       (16133) // -500 (-0.5A)
+#endif
 #define WAIT_LM75A                  (350)   // typical 100ms, limits 300ms
 #define WAIT_MPU6500                (300)   // accel = 4 ~ 4000Hz, gyro = 4 ~ 8000Hz
 #define WAIT_INA226                 (15)    // typical 140us, limits 154us ~ typical 8.244ms, limits 9.068ms
@@ -1157,8 +1162,18 @@ static char getINA226(int i2c, int* voltage, int* current)
     short cvalue;
     TSTError error(TSTERROR_OK);
 #ifdef SPRITE    
-  if (voltage) *voltage=0;  // TO DO: get Sprite voltage
-  if (current) *current=0;  // TO DO: get Sprite current
+{
+    MagneticField b = sprite_mag.read();
+#if 000
+    Serial.print("getINA226 fake mag <x,y,z> ="); 
+    Serial.print ("<"); Serial.print(b.x);
+    Serial.print (","); Serial.print(b.y);
+    Serial.print (","); Serial.print(b.z);
+    Serial.println (">");
+#endif
+    if (voltage) *voltage=b.z;  // have not been able to figure out how to get Sprite voltage
+    if (current) *current=b.x;  // or current
+}
 #else
     I2Cm.clear();
     I2Cm.write(0x02);

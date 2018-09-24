@@ -45,74 +45,79 @@
 #ifndef __WORDTABLE_H
 #define __WORDTABLE_H
 
-#define UNPROGMEM // until this issue is understood
-#define UNPGM_P const char *
+#define SPRITE
 
-static char const g_color_000[] UNPROGMEM = "whit";
-static char const g_color_001[] UNPROGMEM = "whit";
-static char const g_color_002[] UNPROGMEM = "whit";
-static char const g_color_003[] UNPROGMEM = "whit";
-static char const g_color_004[] UNPROGMEM = "whit";
-static char const g_color_005[] UNPROGMEM = "whit";
-static char const g_color_006[] UNPROGMEM = "whit";
-static char const g_color_007[] UNPROGMEM = "whit";
-static char const g_color_008[] UNPROGMEM = "hlot";
-static char const g_color_009[] UNPROGMEM = "mulb";
-static char const g_color_010[] UNPROGMEM = "prpl";
-static char const g_color_011[] UNPROGMEM = "volt";
-static char const g_color_012[] UNPROGMEM = "blvl";
-static char const g_color_013[] UNPROGMEM = "indg";
-static char const g_color_014[] UNPROGMEM = "pers";
-static char const g_color_015[] UNPROGMEM = "blue";
-static char const g_color_016[] UNPROGMEM = "sprb";
-static char const g_color_017[] UNPROGMEM = "sphr";
-static char const g_color_018[] UNPROGMEM = "cblt";
-static char const g_color_019[] UNPROGMEM = "azur";
-static char const g_color_020[] UNPROGMEM = "crnf";
-static char const g_color_021[] UNPROGMEM = "cerl";
-static char const g_color_022[] UNPROGMEM = "arct";
-static char const g_color_023[] UNPROGMEM = "cyan";
-static char const g_color_024[] UNPROGMEM = "opal";
-static char const g_color_025[] UNPROGMEM = "trqs";
-static char const g_color_026[] UNPROGMEM = "aqmr";
-static char const g_color_027[] UNPROGMEM = "sprg";
-static char const g_color_028[] UNPROGMEM = "seag";
-static char const g_color_029[] UNPROGMEM = "mlct";
-static char const g_color_030[] UNPROGMEM = "emrd";
-static char const g_color_031[] UNPROGMEM = "gren";
-static char const g_color_032[] UNPROGMEM = "sapg";
-static char const g_color_033[] UNPROGMEM = "hrlq";
-static char const g_color_034[] UNPROGMEM = "pstc";
-static char const g_color_035[] UNPROGMEM = "chtr";
-static char const g_color_036[] UNPROGMEM = "sprg";
-static char const g_color_037[] UNPROGMEM = "lime";
-static char const g_color_038[] UNPROGMEM = "appl";
-static char const g_color_039[] UNPROGMEM = "yelw";
-static char const g_color_040[] UNPROGMEM = "gold";
-static char const g_color_041[] UNPROGMEM = "ambr";
-static char const g_color_042[] UNPROGMEM = "gmbg";
-static char const g_color_043[] UNPROGMEM = "orag";
-static char const g_color_044[] UNPROGMEM = "tngl";
-static char const g_color_045[] UNPROGMEM = "vrmn";
-static char const g_color_046[] UNPROGMEM = "sclt";
-static char const g_color_047[] UNPROGMEM = "red_";
-static char const g_color_048[] UNPROGMEM = "amrt";
-static char const g_color_049[] UNPROGMEM = "crms";
-static char const g_color_050[] UNPROGMEM = "rsbr";
-static char const g_color_051[] UNPROGMEM = "rose";
-static char const g_color_052[] UNPROGMEM = "cers";
-static char const g_color_053[] UNPROGMEM = "fcha";
-static char const g_color_054[] UNPROGMEM = "orcd";
-static char const g_color_055[] UNPROGMEM = "mgnt";
-static char const g_color_056[] UNPROGMEM = "blck";
-static char const g_color_057[] UNPROGMEM = "blck";
-static char const g_color_058[] UNPROGMEM = "blck";
-static char const g_color_059[] UNPROGMEM = "blck";
-static char const g_color_060[] UNPROGMEM = "blck";
-static char const g_color_061[] UNPROGMEM = "blck";
-static char const g_color_062[] UNPROGMEM = "blck";
-static char const g_color_063[] UNPROGMEM = "blck";
-static UNPGM_P const g_color[] UNPROGMEM = {
+#ifdef SPRITE
+#define PROGMEM // until this issue is understood
+#define PGM_P const char *
+
+#endif
+
+static char const g_color_000[] PROGMEM = "whit";
+static char const g_color_001[] PROGMEM = "whit";
+static char const g_color_002[] PROGMEM = "whit";
+static char const g_color_003[] PROGMEM = "whit";
+static char const g_color_004[] PROGMEM = "whit";
+static char const g_color_005[] PROGMEM = "whit";
+static char const g_color_006[] PROGMEM = "whit";
+static char const g_color_007[] PROGMEM = "whit";
+static char const g_color_008[] PROGMEM = "hlot";
+static char const g_color_009[] PROGMEM = "mulb";
+static char const g_color_010[] PROGMEM = "prpl";
+static char const g_color_011[] PROGMEM = "volt";
+static char const g_color_012[] PROGMEM = "blvl";
+static char const g_color_013[] PROGMEM = "indg";
+static char const g_color_014[] PROGMEM = "pers";
+static char const g_color_015[] PROGMEM = "blue";
+static char const g_color_016[] PROGMEM = "sprb";
+static char const g_color_017[] PROGMEM = "sphr";
+static char const g_color_018[] PROGMEM = "cblt";
+static char const g_color_019[] PROGMEM = "azur";
+static char const g_color_020[] PROGMEM = "crnf";
+static char const g_color_021[] PROGMEM = "cerl";
+static char const g_color_022[] PROGMEM = "arct";
+static char const g_color_023[] PROGMEM = "cyan";
+static char const g_color_024[] PROGMEM = "opal";
+static char const g_color_025[] PROGMEM = "trqs";
+static char const g_color_026[] PROGMEM = "aqmr";
+static char const g_color_027[] PROGMEM = "sprg";
+static char const g_color_028[] PROGMEM = "seag";
+static char const g_color_029[] PROGMEM = "mlct";
+static char const g_color_030[] PROGMEM = "emrd";
+static char const g_color_031[] PROGMEM = "gren";
+static char const g_color_032[] PROGMEM = "sapg";
+static char const g_color_033[] PROGMEM = "hrlq";
+static char const g_color_034[] PROGMEM = "pstc";
+static char const g_color_035[] PROGMEM = "chtr";
+static char const g_color_036[] PROGMEM = "sprg";
+static char const g_color_037[] PROGMEM = "lime";
+static char const g_color_038[] PROGMEM = "appl";
+static char const g_color_039[] PROGMEM = "yelw";
+static char const g_color_040[] PROGMEM = "gold";
+static char const g_color_041[] PROGMEM = "ambr";
+static char const g_color_042[] PROGMEM = "gmbg";
+static char const g_color_043[] PROGMEM = "orag";
+static char const g_color_044[] PROGMEM = "tngl";
+static char const g_color_045[] PROGMEM = "vrmn";
+static char const g_color_046[] PROGMEM = "sclt";
+static char const g_color_047[] PROGMEM = "red_";
+static char const g_color_048[] PROGMEM = "amrt";
+static char const g_color_049[] PROGMEM = "crms";
+static char const g_color_050[] PROGMEM = "rsbr";
+static char const g_color_051[] PROGMEM = "rose";
+static char const g_color_052[] PROGMEM = "cers";
+static char const g_color_053[] PROGMEM = "fcha";
+static char const g_color_054[] PROGMEM = "orcd";
+static char const g_color_055[] PROGMEM = "mgnt";
+static char const g_color_056[] PROGMEM = "blck";
+static char const g_color_057[] PROGMEM = "blck";
+static char const g_color_058[] PROGMEM = "blck";
+static char const g_color_059[] PROGMEM = "blck";
+static char const g_color_060[] PROGMEM = "blck";
+static char const g_color_061[] PROGMEM = "blck";
+static char const g_color_062[] PROGMEM = "blck";
+static char const g_color_063[] PROGMEM = "blck";
+static PGM_P const g_color[] PROGMEM = {
     g_color_000,
     g_color_001,
     g_color_002,
@@ -178,135 +183,135 @@ static UNPGM_P const g_color[] UNPROGMEM = {
     g_color_062,
     g_color_063
 };
-static char const g_rhythm_000[] UNPROGMEM = "abim";
-static char const g_rhythm_001[] UNPROGMEM = "adji";
-static char const g_rhythm_002[] UNPROGMEM = "affa";
-static char const g_rhythm_003[] UNPROGMEM = "alla";
-static char const g_rhythm_004[] UNPROGMEM = "amai";
-static char const g_rhythm_005[] UNPROGMEM = "amen";
-static char const g_rhythm_006[] UNPROGMEM = "amma";
-static char const g_rhythm_007[] UNPROGMEM = "assa";
-static char const g_rhythm_008[] UNPROGMEM = "aula";
-static char const g_rhythm_009[] UNPROGMEM = "auli";
-static char const g_rhythm_010[] UNPROGMEM = "bala";
-static char const g_rhythm_011[] UNPROGMEM = "balo";
-static char const g_rhythm_012[] UNPROGMEM = "band";
-static char const g_rhythm_013[] UNPROGMEM = "bang";
-static char const g_rhythm_014[] UNPROGMEM = "bann";
-static char const g_rhythm_015[] UNPROGMEM = "beri";
-static char const g_rhythm_016[] UNPROGMEM = "bimb";
-static char const g_rhythm_017[] UNPROGMEM = "bimm";
-static char const g_rhythm_018[] UNPROGMEM = "binb";
-static char const g_rhythm_019[] UNPROGMEM = "binn";
-static char const g_rhythm_020[] UNPROGMEM = "blas";
-static char const g_rhythm_021[] UNPROGMEM = "blau";
-static char const g_rhythm_022[] UNPROGMEM = "blon";
-static char const g_rhythm_023[] UNPROGMEM = "bluk";
-static char const g_rhythm_024[] UNPROGMEM = "blun";
-static char const g_rhythm_025[] UNPROGMEM = "brus";
-static char const g_rhythm_026[] UNPROGMEM = "bulo";
-static char const g_rhythm_027[] UNPROGMEM = "bumb";
-static char const g_rhythm_028[] UNPROGMEM = "cado";
-static char const g_rhythm_029[] UNPROGMEM = "dibl";
-static char const g_rhythm_030[] UNPROGMEM = "dibu";
-static char const g_rhythm_031[] UNPROGMEM = "didi";
-static char const g_rhythm_032[] UNPROGMEM = "diga";
-static char const g_rhythm_033[] UNPROGMEM = "dori";
-static char const g_rhythm_034[] UNPROGMEM = "drid";
-static char const g_rhythm_035[] UNPROGMEM = "elif";
-static char const g_rhythm_036[] UNPROGMEM = "falo";
-static char const g_rhythm_037[] UNPROGMEM = "fant";
-static char const g_rhythm_038[] UNPROGMEM = "gadj";
-static char const g_rhythm_039[] UNPROGMEM = "gado";
-static char const g_rhythm_040[] UNPROGMEM = "gaga";
-static char const g_rhythm_041[] UNPROGMEM = "gala";
-static char const g_rhythm_042[] UNPROGMEM = "glan";
-static char const g_rhythm_043[] UNPROGMEM = "glas";
-static char const g_rhythm_044[] UNPROGMEM = "glig";
-static char const g_rhythm_045[] UNPROGMEM = "gooo";
-static char const g_rhythm_046[] UNPROGMEM = "gram";
-static char const g_rhythm_047[] UNPROGMEM = "hoge";
-static char const g_rhythm_048[] UNPROGMEM = "hooo";
-static char const g_rhythm_049[] UNPROGMEM = "hops";
-static char const g_rhythm_050[] UNPROGMEM = "ibar";
-static char const g_rhythm_051[] UNPROGMEM = "igla";
-static char const g_rhythm_052[] UNPROGMEM = "imai";
-static char const g_rhythm_053[] UNPROGMEM = "imba";
-static char const g_rhythm_054[] UNPROGMEM = "imzi";
-static char const g_rhythm_055[] UNPROGMEM = "inai";
-static char const g_rhythm_056[] UNPROGMEM = "iola";
-static char const g_rhythm_057[] UNPROGMEM = "ital";
-static char const g_rhythm_058[] UNPROGMEM = "izim";
-static char const g_rhythm_059[] UNPROGMEM = "jama";
-static char const g_rhythm_060[] UNPROGMEM = "jame";
-static char const g_rhythm_061[] UNPROGMEM = "kata";
-static char const g_rhythm_062[] UNPROGMEM = "lala";
-static char const g_rhythm_063[] UNPROGMEM = "laul";
-static char const g_rhythm_064[] UNPROGMEM = "laxa";
-static char const g_rhythm_065[] UNPROGMEM = "leng";
-static char const g_rhythm_066[] UNPROGMEM = "lima";
-static char const g_rhythm_067[] UNPROGMEM = "ling";
-static char const g_rhythm_068[] UNPROGMEM = "lita";
-static char const g_rhythm_069[] UNPROGMEM = "llal";
-static char const g_rhythm_070[] UNPROGMEM = "lomi";
-static char const g_rhythm_071[] UNPROGMEM = "long";
-static char const g_rhythm_072[] UNPROGMEM = "lonn";
-static char const g_rhythm_073[] UNPROGMEM = "looo";
-static char const g_rhythm_074[] UNPROGMEM = "lopi";
-static char const g_rhythm_075[] UNPROGMEM = "luji";
-static char const g_rhythm_076[] UNPROGMEM = "luku";
-static char const g_rhythm_077[] UNPROGMEM = "lung";
-static char const g_rhythm_078[] UNPROGMEM = "malo";
-static char const g_rhythm_079[] UNPROGMEM = "mbal";
-static char const g_rhythm_080[] UNPROGMEM = "mbra";
-static char const g_rhythm_081[] UNPROGMEM = "mini";
-static char const g_rhythm_082[] UNPROGMEM = "mzim";
-static char const g_rhythm_083[] UNPROGMEM = "nban";
-static char const g_rhythm_084[] UNPROGMEM = "ndri";
-static char const g_rhythm_085[] UNPROGMEM = "negr";
-static char const g_rhythm_086[] UNPROGMEM = "noze";
-static char const g_rhythm_087[] UNPROGMEM = "ogro";
-static char const g_rhythm_088[] UNPROGMEM = "olim";
-static char const g_rhythm_089[] UNPROGMEM = "omen";
-static char const g_rhythm_090[] UNPROGMEM = "omin";
-static char const g_rhythm_091[] UNPROGMEM = "onni";
-static char const g_rhythm_092[] UNPROGMEM = "oooo";
-static char const g_rhythm_093[] UNPROGMEM = "orsu";
-static char const g_rhythm_094[] UNPROGMEM = "osso";
-static char const g_rhythm_095[] UNPROGMEM = "ozer";
-static char const g_rhythm_096[] UNPROGMEM = "palo";
-static char const g_rhythm_097[] UNPROGMEM = "palu";
-static char const g_rhythm_098[] UNPROGMEM = "pimp";
-static char const g_rhythm_099[] UNPROGMEM = "pinx";
-static char const g_rhythm_100[] UNPROGMEM = "piyo";
-static char const g_rhythm_101[] UNPROGMEM = "purz";
-static char const g_rhythm_102[] UNPROGMEM = "rabi";
-static char const g_rhythm_103[] UNPROGMEM = "rhin";
-static char const g_rhythm_104[] UNPROGMEM = "rida";
-static char const g_rhythm_105[] UNPROGMEM = "ridi";
-static char const g_rhythm_106[] UNPROGMEM = "ross";
-static char const g_rhythm_107[] UNPROGMEM = "sala";
-static char const g_rhythm_108[] UNPROGMEM = "sass";
-static char const g_rhythm_109[] UNPROGMEM = "sola";
-static char const g_rhythm_110[] UNPROGMEM = "ssas";
-static char const g_rhythm_111[] UNPROGMEM = "tata";
-static char const g_rhythm_112[] UNPROGMEM = "teru";
-static char const g_rhythm_113[] UNPROGMEM = "torr";
-static char const g_rhythm_114[] UNPROGMEM = "trom";
-static char const g_rhythm_115[] UNPROGMEM = "tuff";
-static char const g_rhythm_116[] UNPROGMEM = "uffm";
-static char const g_rhythm_117[] UNPROGMEM = "urul";
-static char const g_rhythm_118[] UNPROGMEM = "velo";
-static char const g_rhythm_119[] UNPROGMEM = "viol";
-static char const g_rhythm_120[] UNPROGMEM = "wowo";
-static char const g_rhythm_121[] UNPROGMEM = "xato";
-static char const g_rhythm_122[] UNPROGMEM = "zall";
-static char const g_rhythm_123[] UNPROGMEM = "zamm";
-static char const g_rhythm_124[] UNPROGMEM = "zanz";
-static char const g_rhythm_125[] UNPROGMEM = "zimb";
-static char const g_rhythm_126[] UNPROGMEM = "zimz";
-static char const g_rhythm_127[] UNPROGMEM = "zing";
-static UNPGM_P const g_rhythm[] UNPROGMEM = {
+static char const g_rhythm_000[] PROGMEM = "abim";
+static char const g_rhythm_001[] PROGMEM = "adji";
+static char const g_rhythm_002[] PROGMEM = "affa";
+static char const g_rhythm_003[] PROGMEM = "alla";
+static char const g_rhythm_004[] PROGMEM = "amai";
+static char const g_rhythm_005[] PROGMEM = "amen";
+static char const g_rhythm_006[] PROGMEM = "amma";
+static char const g_rhythm_007[] PROGMEM = "assa";
+static char const g_rhythm_008[] PROGMEM = "aula";
+static char const g_rhythm_009[] PROGMEM = "auli";
+static char const g_rhythm_010[] PROGMEM = "bala";
+static char const g_rhythm_011[] PROGMEM = "balo";
+static char const g_rhythm_012[] PROGMEM = "band";
+static char const g_rhythm_013[] PROGMEM = "bang";
+static char const g_rhythm_014[] PROGMEM = "bann";
+static char const g_rhythm_015[] PROGMEM = "beri";
+static char const g_rhythm_016[] PROGMEM = "bimb";
+static char const g_rhythm_017[] PROGMEM = "bimm";
+static char const g_rhythm_018[] PROGMEM = "binb";
+static char const g_rhythm_019[] PROGMEM = "binn";
+static char const g_rhythm_020[] PROGMEM = "blas";
+static char const g_rhythm_021[] PROGMEM = "blau";
+static char const g_rhythm_022[] PROGMEM = "blon";
+static char const g_rhythm_023[] PROGMEM = "bluk";
+static char const g_rhythm_024[] PROGMEM = "blun";
+static char const g_rhythm_025[] PROGMEM = "brus";
+static char const g_rhythm_026[] PROGMEM = "bulo";
+static char const g_rhythm_027[] PROGMEM = "bumb";
+static char const g_rhythm_028[] PROGMEM = "cado";
+static char const g_rhythm_029[] PROGMEM = "dibl";
+static char const g_rhythm_030[] PROGMEM = "dibu";
+static char const g_rhythm_031[] PROGMEM = "didi";
+static char const g_rhythm_032[] PROGMEM = "diga";
+static char const g_rhythm_033[] PROGMEM = "dori";
+static char const g_rhythm_034[] PROGMEM = "drid";
+static char const g_rhythm_035[] PROGMEM = "elif";
+static char const g_rhythm_036[] PROGMEM = "falo";
+static char const g_rhythm_037[] PROGMEM = "fant";
+static char const g_rhythm_038[] PROGMEM = "gadj";
+static char const g_rhythm_039[] PROGMEM = "gado";
+static char const g_rhythm_040[] PROGMEM = "gaga";
+static char const g_rhythm_041[] PROGMEM = "gala";
+static char const g_rhythm_042[] PROGMEM = "glan";
+static char const g_rhythm_043[] PROGMEM = "glas";
+static char const g_rhythm_044[] PROGMEM = "glig";
+static char const g_rhythm_045[] PROGMEM = "gooo";
+static char const g_rhythm_046[] PROGMEM = "gram";
+static char const g_rhythm_047[] PROGMEM = "hoge";
+static char const g_rhythm_048[] PROGMEM = "hooo";
+static char const g_rhythm_049[] PROGMEM = "hops";
+static char const g_rhythm_050[] PROGMEM = "ibar";
+static char const g_rhythm_051[] PROGMEM = "igla";
+static char const g_rhythm_052[] PROGMEM = "imai";
+static char const g_rhythm_053[] PROGMEM = "imba";
+static char const g_rhythm_054[] PROGMEM = "imzi";
+static char const g_rhythm_055[] PROGMEM = "inai";
+static char const g_rhythm_056[] PROGMEM = "iola";
+static char const g_rhythm_057[] PROGMEM = "ital";
+static char const g_rhythm_058[] PROGMEM = "izim";
+static char const g_rhythm_059[] PROGMEM = "jama";
+static char const g_rhythm_060[] PROGMEM = "jame";
+static char const g_rhythm_061[] PROGMEM = "kata";
+static char const g_rhythm_062[] PROGMEM = "lala";
+static char const g_rhythm_063[] PROGMEM = "laul";
+static char const g_rhythm_064[] PROGMEM = "laxa";
+static char const g_rhythm_065[] PROGMEM = "leng";
+static char const g_rhythm_066[] PROGMEM = "lima";
+static char const g_rhythm_067[] PROGMEM = "ling";
+static char const g_rhythm_068[] PROGMEM = "lita";
+static char const g_rhythm_069[] PROGMEM = "llal";
+static char const g_rhythm_070[] PROGMEM = "lomi";
+static char const g_rhythm_071[] PROGMEM = "long";
+static char const g_rhythm_072[] PROGMEM = "lonn";
+static char const g_rhythm_073[] PROGMEM = "looo";
+static char const g_rhythm_074[] PROGMEM = "lopi";
+static char const g_rhythm_075[] PROGMEM = "luji";
+static char const g_rhythm_076[] PROGMEM = "luku";
+static char const g_rhythm_077[] PROGMEM = "lung";
+static char const g_rhythm_078[] PROGMEM = "malo";
+static char const g_rhythm_079[] PROGMEM = "mbal";
+static char const g_rhythm_080[] PROGMEM = "mbra";
+static char const g_rhythm_081[] PROGMEM = "mini";
+static char const g_rhythm_082[] PROGMEM = "mzim";
+static char const g_rhythm_083[] PROGMEM = "nban";
+static char const g_rhythm_084[] PROGMEM = "ndri";
+static char const g_rhythm_085[] PROGMEM = "negr";
+static char const g_rhythm_086[] PROGMEM = "noze";
+static char const g_rhythm_087[] PROGMEM = "ogro";
+static char const g_rhythm_088[] PROGMEM = "olim";
+static char const g_rhythm_089[] PROGMEM = "omen";
+static char const g_rhythm_090[] PROGMEM = "omin";
+static char const g_rhythm_091[] PROGMEM = "onni";
+static char const g_rhythm_092[] PROGMEM = "oooo";
+static char const g_rhythm_093[] PROGMEM = "orsu";
+static char const g_rhythm_094[] PROGMEM = "osso";
+static char const g_rhythm_095[] PROGMEM = "ozer";
+static char const g_rhythm_096[] PROGMEM = "palo";
+static char const g_rhythm_097[] PROGMEM = "palu";
+static char const g_rhythm_098[] PROGMEM = "pimp";
+static char const g_rhythm_099[] PROGMEM = "pinx";
+static char const g_rhythm_100[] PROGMEM = "piyo";
+static char const g_rhythm_101[] PROGMEM = "purz";
+static char const g_rhythm_102[] PROGMEM = "rabi";
+static char const g_rhythm_103[] PROGMEM = "rhin";
+static char const g_rhythm_104[] PROGMEM = "rida";
+static char const g_rhythm_105[] PROGMEM = "ridi";
+static char const g_rhythm_106[] PROGMEM = "ross";
+static char const g_rhythm_107[] PROGMEM = "sala";
+static char const g_rhythm_108[] PROGMEM = "sass";
+static char const g_rhythm_109[] PROGMEM = "sola";
+static char const g_rhythm_110[] PROGMEM = "ssas";
+static char const g_rhythm_111[] PROGMEM = "tata";
+static char const g_rhythm_112[] PROGMEM = "teru";
+static char const g_rhythm_113[] PROGMEM = "torr";
+static char const g_rhythm_114[] PROGMEM = "trom";
+static char const g_rhythm_115[] PROGMEM = "tuff";
+static char const g_rhythm_116[] PROGMEM = "uffm";
+static char const g_rhythm_117[] PROGMEM = "urul";
+static char const g_rhythm_118[] PROGMEM = "velo";
+static char const g_rhythm_119[] PROGMEM = "viol";
+static char const g_rhythm_120[] PROGMEM = "wowo";
+static char const g_rhythm_121[] PROGMEM = "xato";
+static char const g_rhythm_122[] PROGMEM = "zall";
+static char const g_rhythm_123[] PROGMEM = "zamm";
+static char const g_rhythm_124[] PROGMEM = "zanz";
+static char const g_rhythm_125[] PROGMEM = "zimb";
+static char const g_rhythm_126[] PROGMEM = "zimz";
+static char const g_rhythm_127[] PROGMEM = "zing";
+static PGM_P const g_rhythm[] PROGMEM = {
     g_rhythm_000,
     g_rhythm_001,
     g_rhythm_002,
@@ -436,5 +441,76 @@ static UNPGM_P const g_rhythm[] UNPROGMEM = {
     g_rhythm_126,
     g_rhythm_127
 };
+
+// #ifdef SPRITE
+#if 0 // giving up because out of time
+static char const g_HHGTTG_000[] PROGMEM = "I___";
+static char const g_HHGTTG_001[] PROGMEM = "seem";
+static char const g_HHGTTG_002[] PROGMEM = "2 be";
+static char const g_HHGTTG_003[] PROGMEM = "hav-";
+static char const g_HHGTTG_004[] PROGMEM = "-ing";
+static char const g_HHGTTG_005[] PROGMEM = "this";
+static char const g_HHGTTG_006[] PROGMEM = "tre-";
+static char const g_HHGTTG_007[] PROGMEM = "men-";
+static char const g_HHGTTG_008[] PROGMEM = "diff";
+static char const g_HHGTTG_009[] PROGMEM = "icul";
+static char const g_HHGTTG_010[] PROGMEM = "-ty ";
+static char const g_HHGTTG_011[] PROGMEM = "with";
+static char const g_HHGTTG_012[] PROGMEM = " my ";
+static char const g_HHGTTG_013[] PROGMEM = "life";
+static char const g_HHGTTG_014[] PROGMEM = "styl";
+static char const g_HHGTTG_015[] PROGMEM = "A:42";
+static char const g_HHGTTG_016[] PROGMEM = "I'm ";
+static char const g_HHGTTG_017[] PROGMEM = " a  ";
+static char const g_HHGTTG_018[] PROGMEM = "tea-";
+static char const g_HHGTTG_019[] PROGMEM = "pot.";
+static char const g_HHGTTG_020[] PROGMEM = "grbg"; // gruntbuggly
+static char const g_HHGTTG_021[] PROGMEM = "gabl"; // gabbleblotchit
+static char const g_HHGTTG_022[] PROGMEM = "jrtl"; // jurtle
+static char const g_HHGTTG_023[] PROGMEM = "agcr"; // acrocrustles
+static char const g_HHGTTG_024[] PROGMEM = "axgr"; // axlegurt
+static char const g_HHGTTG_025[] PROGMEM = "glup"; // glupule
+static char const g_HHGTTG_026[] PROGMEM = "trld"; // turlingdrome
+static char const g_HHGTTG_027[] PROGMEM = "bnwr"; // bindlewurdle
+static char const g_HHGTTG_028[] PROGMEM = "mshb"; // mashurbitries
+static char const g_HHGTTG_029[] PROGMEM = "gbwr"; // gobberwart
+static char const g_HHGTTG_030[] PROGMEM = "blcr"; // blrglecruncheon
+
+
+
+static PGM_P const g_HHGTTG[] PROGMEM = {
+	g_HHGTTG_000,
+	g_HHGTTG_001,
+	g_HHGTTG_002,
+	g_HHGTTG_003,
+	g_HHGTTG_004,
+	g_HHGTTG_005,
+	g_HHGTTG_006,
+	g_HHGTTG_007,
+	g_HHGTTG_008,
+	g_HHGTTG_009,
+	g_HHGTTG_010,
+	g_HHGTTG_011,
+	g_HHGTTG_012,
+	g_HHGTTG_013,
+	g_HHGTTG_014,
+	g_HHGTTG_015,
+	g_HHGTTG_016,
+	g_HHGTTG_017,
+	g_HHGTTG_018,
+	g_HHGTTG_019,
+	g_HHGTTG_020,
+	g_HHGTTG_021,
+	g_HHGTTG_022,
+	g_HHGTTG_023,
+	g_HHGTTG_024,
+	g_HHGTTG_025,
+	g_HHGTTG_026,
+	g_HHGTTG_027,
+	g_HHGTTG_028,
+	g_HHGTTG_029,
+	g_HHGTTG_030
+};
+#endif
 
 #endif
