@@ -1,6 +1,6 @@
 Cicada is a poem-generator that uses satellite instrument readings to select words
 for nonsense poems. The nonsense words were made up by Hugo Ball for his
-poem, I zimbra. His intent was to reflect international harmony in with
+poem, I zimbra. His intent was to reflect international harmony in 
 words that all could speak, with no prejudice toward any existing spoken
 language. The lyrics became the basis for a song by David Byrne and Brian Eno,
 released as a single but also on the Talking Heads album, Fear of Music.
@@ -9,7 +9,7 @@ fly with no regard for national boundaries.
 
 The poetry generator was loaded into a KickSat Sprite, and flew on the KickSat 2 mission.
 Signal reception from Sprites was poor on that mission, and there were also
-probable issues with Sprite release so it's unknown whether Cicada flew, and if
+probable issues with Sprite release -- so it's unknown whether Cicada flew, and if
 it did whether it sung.
 
 The spacecraft software substrate for the poetry generator was originally provided for the
